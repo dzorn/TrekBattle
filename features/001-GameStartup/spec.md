@@ -58,6 +58,9 @@ The repository will contain a working Angular client, a minimal ASP.NET Core API
 
 - Requirement 1: The player must be able to enter a player name and ship name.
 - Requirement 2: Starting a game must create an anonymous session record with a GUID and a player-entered human-friendly resume code.
+- Requirement 2a: The player-entered resume code must be unique per player name and ship name combination.
+- Requirement 2b: The underlying GUID must be unique across all sessions.
+- Requirement 2c: The resume code alone must be sufficient to restore the session.
 - Requirement 3: The launch screen must show the mission description and the recovery code.
 - Requirement 4: The recovery code must be usable later to restore the exact saved game state.
 - Requirement 5: The solution must include an Angular client, a Minimal API, an Aspire AppHost, and SQL Server resource wiring.
@@ -68,6 +71,8 @@ The repository will contain a working Angular client, a minimal ASP.NET Core API
 - The player does not authenticate.
 - Session identity should be generated on game start and shown to the user immediately.
 - The recovery code should be human-friendly and player-entered, while the GUID remains the underlying machine key.
+- The player-entered resume code must be unique within the player and ship name pairing.
+- The resume code alone should identify the session for restoration.
 - Resume must restore the exact saved state, not a checkpoint approximation.
 - The UI should feel modern Angular rather than terminal-only, but still stay simple and readable.
 - The project should use Aspire to manage local orchestration and the first infrastructure resource should be SQL Server.
@@ -89,6 +94,7 @@ The repository will contain a working Angular client, a minimal ASP.NET Core API
   - Show the mission description.
   - Show the session recovery code and session identity details.
   - Present the next-step entry point into the game.
+  - Show the player-entered resume code for later use.
 
 ## Module User Stories
 
@@ -260,7 +266,7 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Persist the created game session to SQL Server.
 - [ ] Add API support for looking up a saved session by recovery code or session GUID.
 - [ ] Restore the exact saved state when a player resumes a session.
-- [ ] Ensure the recovery code is human-friendly, player-entered, and stable for later use.
+- [ ] Ensure the recovery code is human-friendly, player-entered, unique per player and ship name combination, and stable for later use.
 
 #### Tests
 
@@ -287,8 +293,10 @@ Test tasks must be written as individual test cases, not broad statements like "
 
 ## Acceptance Criteria
 
-- [ ] A player can start a new game by entering a player name and ship name.
+- [ ] A player can start a new game by entering a player name, ship name, and resume code.
 - [ ] Starting a game creates an anonymous session with a GUID and a player-entered human-friendly recovery code.
+- [ ] The resume code is unique per player and ship name pairing.
+- [ ] The resume code alone is sufficient to restore the saved session.
 - [ ] The launch screen shows the mission description and recovery details.
 - [ ] The session can be resumed later using the recovery code.
 - [ ] The resumed session restores the exact saved state.

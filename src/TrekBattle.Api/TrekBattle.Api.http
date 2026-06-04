@@ -1,0 +1,6 @@
+@TrekBattle.Api_HostAddress = http://localhost:5063
+
+GET {{TrekBattle.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

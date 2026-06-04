@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TrekBattle.Api/TrekBattle.Api.csproj" />
+    <Project Path="src/TrekBattle.AppHost/TrekBattle.AppHost.csproj" />
+    <Project Path="src/TrekBattle.AspireConstants/TrekBattle.AspireConstants.csproj" />
+    <Project Path="src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TrekBattle.Api.Tests/TrekBattle.Api.Tests.csproj" />
+  </Folder>
+</Solution>

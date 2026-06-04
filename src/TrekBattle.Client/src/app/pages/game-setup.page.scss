@@ -1,0 +1,125 @@
+.setup-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.panel {
+  padding: 1.5rem;
+  border: 1px solid rgba(172, 194, 255, 0.15);
+  border-radius: 1.5rem;
+  background: rgba(8, 15, 31, 0.72);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.intro-panel h2,
+.form-panel h3 {
+  margin: 0.35rem 0 0;
+  line-height: 1.05;
+}
+
+.intro-panel p {
+  color: rgba(244, 247, 251, 0.82);
+}
+
+.section-label {
+  margin: 0;
+  color: #8cb8ff;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.76rem;
+}
+
+.callout {
+  margin-top: 1.25rem;
+  padding: 1rem 1rem 1.1rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(86, 164, 255, 0.16), rgba(30, 233, 163, 0.12));
+  border: 1px solid rgba(180, 208, 255, 0.14);
+}
+
+.callout span {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(244, 247, 251, 0.68);
+}
+
+.callout strong {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+.stack {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+label {
+  display: grid;
+  gap: 0.45rem;
+}
+
+label span {
+  font-size: 0.92rem;
+  color: rgba(244, 247, 251, 0.88);
+}
+
+input {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(177, 196, 255, 0.18);
+  background: rgba(2, 7, 19, 0.85);
+  color: #f4f7fb;
+  font: inherit;
+  outline: none;
+}
+
+input:focus {
+  border-color: rgba(140, 184, 255, 0.8);
+  box-shadow: 0 0 0 4px rgba(140, 184, 255, 0.13);
+}
+
+small {
+  color: #ffb5b5;
+}
+
+button {
+  border: 0;
+  border-radius: 0.95rem;
+  padding: 0.95rem 1.1rem;
+  background: linear-gradient(135deg, #7eb5ff, #7af6c7);
+  color: #08101f;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: linear-gradient(135deg, #ffc66e, #ff8f5c);
+}
+
+button:disabled {
+  opacity: 0.68;
+  cursor: progress;
+}
+
+.error-panel {
+  margin-top: 1.25rem;
+  border-color: rgba(255, 142, 142, 0.28);
+}
+
+.error-panel p {
+  margin: 0.4rem 0 0;
+}
+
+@media (max-width: 920px) {
+  .setup-grid {
+    grid-template-columns: 1fr;
+  }
+}

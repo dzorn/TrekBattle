@@ -1,0 +1,425 @@
+{
+  "version": 2,
+  "dgSpecHash": "sLJMInger0A=",
+  "success": false,
+  "projectFilePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+  "expectedPackageFiles": [
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.ambientmetadata.application/10.6.0/microsoft.extensions.ambientmetadata.application.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.compliance.abstractions/10.6.0/microsoft.extensions.compliance.abstractions.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.dependencyinjection.autoactivation/10.6.0/microsoft.extensions.dependencyinjection.autoactivation.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.diagnostics.exceptionsummarization/10.6.0/microsoft.extensions.diagnostics.exceptionsummarization.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.http.diagnostics/10.6.0/microsoft.extensions.http.diagnostics.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.http.resilience/10.6.0/microsoft.extensions.http.resilience.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.resilience/10.6.0/microsoft.extensions.resilience.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.servicediscovery/10.6.0/microsoft.extensions.servicediscovery.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.servicediscovery.abstractions/10.6.0/microsoft.extensions.servicediscovery.abstractions.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.telemetry/10.6.0/microsoft.extensions.telemetry.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/microsoft.extensions.telemetry.abstractions/10.6.0/microsoft.extensions.telemetry.abstractions.10.6.0.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/opentelemetry/1.15.3/opentelemetry.1.15.3.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/opentelemetry.api/1.15.3/opentelemetry.api.1.15.3.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/opentelemetry.api.providerbuilderextensions/1.15.3/opentelemetry.api.providerbuilderextensions.1.15.3.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/opentelemetry.exporter.opentelemetryprotocol/1.15.3/opentelemetry.exporter.opentelemetryprotocol.1.15.3.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/opentelemetry.extensions.hosting/1.15.3/opentelemetry.extensions.hosting.1.15.3.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/opentelemetry.instrumentation.aspnetcore/1.15.2/opentelemetry.instrumentation.aspnetcore.1.15.2.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/opentelemetry.instrumentation.http/1.15.1/opentelemetry.instrumentation.http.1.15.1.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/opentelemetry.instrumentation.runtime/1.15.1/opentelemetry.instrumentation.runtime.1.15.1.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/polly.core/8.4.2/polly.core.8.4.2.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/polly.extensions/8.4.2/polly.extensions.8.4.2.nupkg.sha512",
+    "/Users/davidzorn/.nuget/packages/polly.ratelimiting/8.4.2/polly.ratelimiting.8.4.2.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.\n  Response status code does not indicate success: 401 (Unauthorized).",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://pkgs.dev.azure.com/appech/_packaging/appech/nuget/v3/index.json.",
+      "projectPath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/davidzorn/Source/repos/TrekBattle/src/TrekBattle.ServiceDefaults/TrekBattle.ServiceDefaults.csproj",
+      "targetGraphs": []
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+@if (loading()) {
+  <section class="panel status-panel">
+    <p class="section-label">Flight Computer</p>
+    <h2>Loading your recovered session...</h2>
+    <p>Please stand by while the console rebuilds your exact saved state.</p>
+  </section>
+}
+
+@if (loadError(); as error) {
+  <section class="panel status-panel danger">
+    <p class="section-label">Recovery Failed</p>
+    <h2>That resume code did not match a saved session.</h2>
+    <p>{{ error }}</p>
+    <a routerLink="/">Return to startup</a>
+  </section>
+}
+
+@if (session(); as game) {
+  <section class="launch-layout">
+    <article class="panel mission-panel">
+      <p class="section-label">Mission Brief</p>
+      <h2>{{ game.missionTitle }}</h2>
+      <p class="mission-brief">{{ game.missionBrief }}</p>
+      <div class="objective">
+        <span>Objective</span>
+        <strong>{{ game.missionObjective }}</strong>
+      </div>
+    </article>
+
+    <article class="panel status-panel">
+      <p class="section-label">Recovery Code</p>
+      <h3>{{ game.resumeCode }}</h3>
+      <p class="subtle">Enter this code in any case to restore the exact same session later.</p>
+
+      <dl>
+        <div>
+          <dt>Player</dt>
+          <dd>{{ game.playerName }}</dd>
+        </div>
+        <div>
+          <dt>Ship</dt>
+          <dd>{{ game.shipName }}</dd>
+        </div>
+        <div>
+          <dt>Session ID</dt>
+          <dd>{{ game.sessionId }}</dd>
+        </div>
+        <div>
+          <dt>Started</dt>
+          <dd>{{ game.createdUtc | date:'medium' }}</dd>
+        </div>
+      </dl>
+
+      <a routerLink="/">Return to startup</a>
+    </article>
+  </section>
+}

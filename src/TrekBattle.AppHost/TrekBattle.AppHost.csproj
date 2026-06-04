@@ -1,0 +1,20 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.4.2">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>d1c7f04b-ff8a-45d9-8b1c-fd2c7752250e</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TrekBattle.Api\TrekBattle.Api.csproj" />
+    <ProjectReference Include="..\TrekBattle.AspireConstants\TrekBattle.AspireConstants.csproj" IsAspireProjectResource="false" />
+  </ItemGroup>
+
+</Project>

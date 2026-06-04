@@ -1,0 +1,4 @@
+test-results/
+src/TrekBattle.Api/trekbattle.local.db
+src/TrekBattle.Api/trekbattle.local.db-shm
+src/TrekBattle.Api/trekbattle.local.db-wal

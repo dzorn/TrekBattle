@@ -1,0 +1,90 @@
+.launch-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.25rem;
+}
+
+.panel {
+  padding: 1.5rem;
+  border: 1px solid rgba(172, 194, 255, 0.15);
+  border-radius: 1.5rem;
+  background: rgba(8, 15, 31, 0.72);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.section-label {
+  margin: 0;
+  color: #8cb8ff;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.76rem;
+}
+
+.mission-panel h2,
+.status-panel h3 {
+  margin: 0.35rem 0 0;
+  line-height: 1.05;
+}
+
+.mission-brief,
+.subtle {
+  color: rgba(244, 247, 251, 0.82);
+}
+
+.objective {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(86, 164, 255, 0.16), rgba(30, 233, 163, 0.12));
+  border: 1px solid rgba(180, 208, 255, 0.14);
+}
+
+.objective span,
+dt {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(244, 247, 251, 0.68);
+}
+
+.objective strong {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+dl {
+  display: grid;
+  gap: 0.85rem;
+  margin: 1rem 0 1.25rem;
+}
+
+dd {
+  margin: 0.25rem 0 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: 0.95rem;
+  background: linear-gradient(135deg, #7eb5ff, #7af6c7);
+  color: #08101f;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.danger {
+  border-color: rgba(255, 142, 142, 0.28);
+}
+
+@media (max-width: 920px) {
+  .launch-layout {
+    grid-template-columns: 1fr;
+  }
+}

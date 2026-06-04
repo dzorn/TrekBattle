@@ -1,0 +1,69 @@
+<section class="setup-grid">
+  <article class="panel intro-panel">
+    <p class="section-label">Startup Command</p>
+    <h2>Launch a new mission or resume an old one.</h2>
+    <p>
+      TrekBattle uses a generated recovery code that is stored in PascalCase, but you can enter it
+      without matching case. The resume code alone brings back the exact saved session.
+    </p>
+    <div class="callout">
+      <span>Setup note</span>
+      <strong>No account needed. No login screen. Minimal bureaucracy.</strong>
+    </div>
+  </article>
+
+  <article class="panel form-panel">
+    <p class="section-label">New Game</p>
+    <h3>Enter your command details</h3>
+
+    <form class="stack" [formGroup]="newGameForm" (ngSubmit)="startNewGame()">
+      <label>
+        <span>Player Name</span>
+        <input formControlName="playerName" type="text" placeholder="Elgin" autocomplete="name" />
+        @if (playerNameControl.touched && playerNameControl.invalid) {
+          <small>Player name is required.</small>
+        }
+      </label>
+
+      <label>
+        <span>Ship Name</span>
+        <input formControlName="shipName" type="text" placeholder="USS Horizon" autocomplete="off" />
+        @if (shipNameControl.touched && shipNameControl.invalid) {
+          <small>Ship name is required.</small>
+        }
+      </label>
+
+      <button type="submit" [disabled]="isSubmitting()">Start New Game</button>
+    </form>
+  </article>
+
+  <article class="panel form-panel">
+    <p class="section-label">Resume Session</p>
+    <h3>Enter a recovery code</h3>
+
+    <form class="stack" [formGroup]="resumeForm" (ngSubmit)="resumeExistingGame()">
+      <label>
+        <span>Resume Code</span>
+        <input
+          formControlName="resumeCode"
+          type="text"
+          placeholder="DarkAnchor012"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        @if (resumeCodeControl.touched && resumeCodeControl.invalid) {
+          <small>Resume code is required.</small>
+        }
+      </label>
+
+      <button type="submit" class="secondary" [disabled]="isSubmitting()">Resume Saved Game</button>
+    </form>
+  </article>
+</section>
+
+@if (errorMessage(); as error) {
+  <section class="panel error-panel">
+    <strong>Mission Control</strong>
+    <p>{{ error }}</p>
+  </section>
+}

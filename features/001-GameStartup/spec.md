@@ -10,7 +10,7 @@ Feature
 
 ## Status
 
-In Design
+Complete
 
 ## Work Item
 
@@ -235,82 +235,82 @@ Test tasks must be written as individual test cases, not broad statements like "
 
 #### Application Development
 
-- [ ] Create the root solution and initial project structure for the Angular client, ASP.NET Core API, Aspire AppHost, service defaults, and shared Aspire constants.
-- [ ] Configure Aspire AppHost wiring for the client, API, and SQL Server resource.
-- [ ] Add the initial SQL Server resource and database wiring in the AppHost.
-- [ ] Set up the basic solution references so the projects can run together locally.
+- [x] Create the root solution and initial project structure for the Angular client, ASP.NET Core API, Aspire AppHost, service defaults, and shared Aspire constants.
+- [x] Configure Aspire AppHost wiring for the client, API, and SQL Server resource.
+- [x] Add the initial SQL Server resource and database wiring in the AppHost.
+- [x] Set up the basic solution references so the projects can run together locally.
 
 #### Tests
 
-- [ ] Verify the AppHost starts the declared resources successfully.
-- [ ] Verify the API is reachable through Aspire wiring rather than hardcoded local ports.
-- [ ] Verify the client project loads in the development stack.
+- [x] Verify the AppHost starts the declared resources successfully.
+- [x] Verify the API is reachable through Aspire wiring rather than hardcoded local ports.
+- [x] Verify the client project loads in the development stack.
 
 ### Phase 2: Game Startup Flow
 
 #### Application Development
 
-- [ ] Build the Angular game start form for player name, ship name, and existing resume code entry.
-- [ ] Build the Angular UI that displays a newly generated resume code in the required two-word-plus-three-digit PascalCase format.
-- [ ] Build the Angular launch screen that shows the mission and recovery details.
-- [ ] Implement the minimal API endpoints needed to create a new session.
-- [ ] Return the session GUID and human-friendly recovery code from the API.
-- [ ] Navigate the client from the start form to the launch screen after successful session creation.
+- [x] Build the Angular game start form for player name, ship name, and existing resume code entry.
+- [x] Build the Angular UI that displays a newly generated resume code in the required two-word-plus-three-digit PascalCase format.
+- [x] Build the Angular launch screen that shows the mission and recovery details.
+- [x] Implement the minimal API endpoints needed to create a new session.
+- [x] Return the session GUID and human-friendly recovery code from the API.
+- [x] Navigate the client from the start form to the launch screen after successful session creation.
 
 #### Tests
 
-- [ ] Verify a player can submit valid names to create a new session and receive a generated resume code.
-- [ ] Verify a player can enter an existing resume code in any letter case to restore a previous session.
-- [ ] Verify required-field validation appears when the player leaves the name fields empty.
-- [ ] Verify required-field validation appears when the player leaves the resume code field empty during restore.
-- [ ] Verify the launch screen displays the mission description after startup.
-- [ ] Verify the launch screen displays the recovery code after startup.
-- [ ] Verify the startup flow remains readable on a standard desktop viewport.
+- [x] Verify a player can submit valid names to create a new session and receive a generated resume code.
+- [x] Verify a player can enter an existing resume code in any letter case to restore a previous session.
+- [x] Verify required-field validation appears when the player leaves the name fields empty.
+- [x] Verify required-field validation appears when the player leaves the resume code field empty during restore.
+- [x] Verify the launch screen displays the mission description after startup.
+- [x] Verify the launch screen displays the recovery code after startup.
+- [x] Verify the startup flow remains readable on a standard desktop viewport.
 
 ### Phase 3: Session Persistence and Resume
 
 #### Application Development
 
-- [ ] Persist the created game session to SQL Server.
-- [ ] Add API support for looking up a saved session by recovery code or session GUID.
-- [ ] Restore the exact saved state when a player resumes a session.
-- [ ] Ensure the recovery code is human-friendly, app-generated, unique across sessions, stored in PascalCase, and stable for later use.
+- [x] Persist the created game session to SQL Server.
+- [x] Add API support for looking up a saved session by recovery code or session GUID.
+- [x] Restore the exact saved state when a player resumes a session.
+- [x] Ensure the recovery code is human-friendly, app-generated, unique across sessions, stored in PascalCase, and stable for later use.
 
 #### Tests
 
-- [ ] Verify a newly created session is written to SQL Server.
-- [ ] Verify the saved session can be restored using the recovery code.
-- [ ] Verify the restored session matches the exact previously saved state.
-- [ ] Verify an unknown recovery code does not restore a session.
-- [ ] Verify the session still resumes correctly after the app is reloaded.
+- [x] Verify a newly created session is written to SQL Server.
+- [x] Verify the saved session can be restored using the recovery code.
+- [x] Verify the restored session matches the exact previously saved state.
+- [x] Verify an unknown recovery code does not restore a session.
+- [x] Verify the session still resumes correctly after the app is reloaded.
 
 ### Final Phase: Validation And Completion
 
 #### Application Validation
 
-- [ ] Run the relevant build/compile validation successfully.
-- [ ] Run all relevant automated tests successfully.
-- [ ] Run any required launch/run validation successfully.
+- [x] Run the relevant build/compile validation successfully.
+- [x] Run all relevant automated tests successfully.
+- [x] Run any required launch/run validation successfully.
 
 #### UI Validation
 
-- [ ] Run Playwright coverage for every UI-affecting change when the project supports it.
-- [ ] Verify the expected rendered state after each meaningful UI action.
-- [ ] Verify persisted state again after reload or revisit when persistence matters.
-- [ ] Capture and review final screenshots of the affected UI before handoff.
+- [x] Run Playwright coverage for every UI-affecting change when the project supports it.
+- [x] Verify the expected rendered state after each meaningful UI action.
+- [x] Verify persisted state again after reload or revisit when persistence matters.
+- [x] Capture and review final screenshots of the affected UI before handoff.
 
 ## Acceptance Criteria
 
-- [ ] A player can start a new game by entering a player name and ship name.
-- [ ] A player can enter an existing resume code to restore a previous session.
-- [ ] Starting a game creates an anonymous session with a GUID and an app-generated human-friendly recovery code.
-- [ ] The resume code follows the `TwoWord123` format with no whitespace and is stored in PascalCase.
-- [ ] The resume code can be entered without matching case and still restores the saved session.
-- [ ] The resume code alone is sufficient to restore the saved session.
-- [ ] The launch screen shows the mission description and recovery details.
-- [ ] The session can be resumed later using the recovery code.
-- [ ] The resumed session restores the exact saved state.
-- [ ] The Angular client, minimal API, Aspire AppHost, and SQL Server resource are all set up and wired together.
+- [x] A player can start a new game by entering a player name and ship name.
+- [x] A player can enter an existing resume code to restore a previous session.
+- [x] Starting a game creates an anonymous session with a GUID and an app-generated human-friendly recovery code.
+- [x] The resume code follows the `TwoWord123` format with no whitespace and is stored in PascalCase.
+- [x] The resume code can be entered without matching case and still restores the saved session.
+- [x] The resume code alone is sufficient to restore the saved session.
+- [x] The launch screen shows the mission description and recovery details.
+- [x] The session can be resumed later using the recovery code.
+- [x] The resumed session restores the exact saved state.
+- [x] The Angular client, minimal API, Aspire AppHost, and SQL Server resource are all set up and wired together.
 
 ## Testing
 

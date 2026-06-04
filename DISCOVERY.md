@@ -57,8 +57,10 @@ TrekBattle is a strategy and combat game inspired by the original console CLI St
 - Requirement 4: Support planets and bases in some systems.
 - Requirement 5: Allow anonymous play without authentication.
 - Requirement 6: Generate a session GUID at game start, show it to the player, and use it to restore saved state later.
-- Requirement 7: Provide a human-friendly resume code for returning players.
-- Requirement 8: Resuming a session must restore the exact saved game state.
+- Requirement 7: Provide an app-generated human-friendly resume code for returning players.
+- Requirement 8: Resume codes are stored in PascalCase but may be entered case-insensitively.
+- Requirement 9: The startup screen must allow a player to enter an existing resume code to restore a previous session.
+- Requirement 10: Resuming a session must restore the exact saved game state.
 
 ## Use Cases
 

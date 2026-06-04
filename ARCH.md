@@ -20,7 +20,7 @@ Track the chosen architecture and important design decisions.
 - External systems: None identified yet
 - Async processing: Likely minimal at first
 - Data boundaries: Client talks to API; game state and rules should live server-side
-- Session model: Anonymous session GUID acts as the persistence key for restoring game state, with a human-friendly resume code as a user-facing alias; resumes must restore the exact saved state
+- Session model: Anonymous session GUID acts as the persistence key for restoring game state, with an app-generated human-friendly resume code stored in PascalCase as a user-facing alias; resumes must restore the exact saved state and accept case-insensitive player entry
 
 ## Notes
 

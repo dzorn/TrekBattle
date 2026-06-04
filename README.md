@@ -12,7 +12,9 @@ TrekBattle is a strategy and combat game inspired by the original console CLI St
 - Keep the game feel classic while using modern .NET and web tooling.
 - Let anyone play without needing an account or authentication.
 - Persist game state by anonymous session GUID so players can return later.
-- Provide a human-friendly resume code alongside the session GUID.
+- Provide an app-generated human-friendly resume code alongside the session GUID.
+- Store resume codes in PascalCase while allowing case-insensitive player entry.
+- Allow players to enter an existing resume code to restore a previous session.
 - Restore the exact saved game state when a player resumes.
 
 ## Key Features

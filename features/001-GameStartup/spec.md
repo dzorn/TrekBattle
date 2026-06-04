@@ -21,7 +21,7 @@ In Design
 
 ## Overview
 
-Game Startup is the first playable slice of TrekBattle. It will let a player enter a name and ship name, create an anonymous game session, and transition into a launch screen that explains the mission and shows the player's recovery details.
+Game Startup is the first playable slice of TrekBattle. It will let a player enter a name and ship name, create an anonymous game session, and transition into a launch screen that explains the mission and shows the player's recovery details. The startup screen will also let a player enter an existing resume code to restore a previous session. Resume codes are generated and stored in PascalCase, but players may enter them without matching case.
 
 This feature also establishes the application foundation:
 
@@ -33,7 +33,8 @@ This feature also establishes the application foundation:
 ## Goals
 
 - Let a player start a new game by entering a player name and ship name.
-- Create an anonymous saved session with a player-entered resume code that can be resumed later.
+- Create an anonymous saved session with an app-generated resume code that can be resumed later.
+- Let a player enter an existing resume code to restore a previous session.
 - Show a launch screen with the mission description and recovery information.
 - Set up the initial application stack for the project.
 - Store session state in SQL Server through the API.
@@ -52,15 +53,16 @@ The repository contains discovery documentation and no application code. The tar
 
 ## Target State
 
-The repository will contain a working Angular client, a minimal ASP.NET Core API, an Aspire AppHost with SQL Server orchestration, and a startup flow where a player can create a new session, choose a recovery code, and proceed to the launch screen.
+The repository will contain a working Angular client, a minimal ASP.NET Core API, an Aspire AppHost with SQL Server orchestration, and a startup flow where a player can create a new session, receive a generated recovery code, or enter an existing code to restore a previous session.
 
 ## Requirements
 
 - Requirement 1: The player must be able to enter a player name and ship name.
-- Requirement 2: Starting a game must create an anonymous session record with a GUID and a player-entered human-friendly resume code.
-- Requirement 2a: The player-entered resume code must be unique per player name and ship name combination.
-- Requirement 2b: The underlying GUID must be unique across all sessions.
+- Requirement 2: Starting a game must create an anonymous session record with a GUID and an app-generated human-friendly resume code.
+- Requirement 2a: The resume code must follow a `TwoWord123` style with no whitespace and be stored in PascalCase.
+- Requirement 2b: The resume code must be unique across all sessions.
 - Requirement 2c: The resume code alone must be sufficient to restore the session.
+- Requirement 2d: The underlying GUID must be unique across all sessions.
 - Requirement 3: The launch screen must show the mission description and the recovery code.
 - Requirement 4: The recovery code must be usable later to restore the exact saved game state.
 - Requirement 5: The solution must include an Angular client, a Minimal API, an Aspire AppHost, and SQL Server resource wiring.
@@ -70,8 +72,10 @@ The repository will contain a working Angular client, a minimal ASP.NET Core API
 
 - The player does not authenticate.
 - Session identity should be generated on game start and shown to the user immediately.
-- The recovery code should be human-friendly and player-entered, while the GUID remains the underlying machine key.
-- The player-entered resume code must be unique within the player and ship name pairing.
+- The recovery code should be human-friendly and app-generated, while the GUID remains the underlying machine key.
+- The recovery code should use a two-word-plus-three-digit format with no whitespace, such as `DarkAnchor012` or `MerlinBoat444`.
+- The recovery code should be stored canonically in PascalCase, while lookup should be case-insensitive for player entry.
+- The startup screen should offer both new game setup and previous-session restore entry.
 - The resume code alone should identify the session for restoration.
 - Resume must restore the exact saved state, not a checkpoint approximation.
 - The UI should feel modern Angular rather than terminal-only, but still stay simple and readable.
@@ -87,14 +91,17 @@ The repository will contain a working Angular client, a minimal ASP.NET Core API
 
 - `Game Start` - `New`
   - Collect player name and ship name.
-  - Collect the player-entered resume code.
+  - Collect the code for restoring a previous session.
+  - Generate and display a new app-generated resume code for new sessions.
+  - Validate that generated resume codes follow the required format, remain unique, and are normalized to PascalCase.
   - Start a new anonymous game session.
   - Transition to the launch screen after creation.
 - `Game Launch` - `New`
   - Show the mission description.
   - Show the session recovery code and session identity details.
   - Present the next-step entry point into the game.
-  - Show the player-entered resume code for later use.
+  - Show the app-generated resume code for later use.
+  - Indicate that resume code entry is case-insensitive.
 
 ## Module User Stories
 
@@ -243,8 +250,8 @@ Test tasks must be written as individual test cases, not broad statements like "
 
 #### Application Development
 
-- [ ] Build the Angular game start form for player name and ship name entry.
-- [ ] Build the Angular game start form for player name, ship name, and player-entered resume code entry.
+- [ ] Build the Angular game start form for player name, ship name, and existing resume code entry.
+- [ ] Build the Angular UI that displays a newly generated resume code in the required two-word-plus-three-digit PascalCase format.
 - [ ] Build the Angular launch screen that shows the mission and recovery details.
 - [ ] Implement the minimal API endpoints needed to create a new session.
 - [ ] Return the session GUID and human-friendly recovery code from the API.
@@ -252,9 +259,10 @@ Test tasks must be written as individual test cases, not broad statements like "
 
 #### Tests
 
-- [ ] Verify a player can submit valid names and a player-entered resume code to create a new session.
+- [ ] Verify a player can submit valid names to create a new session and receive a generated resume code.
+- [ ] Verify a player can enter an existing resume code in any letter case to restore a previous session.
 - [ ] Verify required-field validation appears when the player leaves the name fields empty.
-- [ ] Verify required-field validation appears when the player leaves the resume code field empty.
+- [ ] Verify required-field validation appears when the player leaves the resume code field empty during restore.
 - [ ] Verify the launch screen displays the mission description after startup.
 - [ ] Verify the launch screen displays the recovery code after startup.
 - [ ] Verify the startup flow remains readable on a standard desktop viewport.
@@ -266,7 +274,7 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Persist the created game session to SQL Server.
 - [ ] Add API support for looking up a saved session by recovery code or session GUID.
 - [ ] Restore the exact saved state when a player resumes a session.
-- [ ] Ensure the recovery code is human-friendly, player-entered, unique per player and ship name combination, and stable for later use.
+- [ ] Ensure the recovery code is human-friendly, app-generated, unique across sessions, stored in PascalCase, and stable for later use.
 
 #### Tests
 
@@ -293,9 +301,11 @@ Test tasks must be written as individual test cases, not broad statements like "
 
 ## Acceptance Criteria
 
-- [ ] A player can start a new game by entering a player name, ship name, and resume code.
-- [ ] Starting a game creates an anonymous session with a GUID and a player-entered human-friendly recovery code.
-- [ ] The resume code is unique per player and ship name pairing.
+- [ ] A player can start a new game by entering a player name and ship name.
+- [ ] A player can enter an existing resume code to restore a previous session.
+- [ ] Starting a game creates an anonymous session with a GUID and an app-generated human-friendly recovery code.
+- [ ] The resume code follows the `TwoWord123` format with no whitespace and is stored in PascalCase.
+- [ ] The resume code can be entered without matching case and still restores the saved session.
 - [ ] The resume code alone is sufficient to restore the saved session.
 - [ ] The launch screen shows the mission description and recovery details.
 - [ ] The session can be resumed later using the recovery code.

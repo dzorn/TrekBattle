@@ -10,7 +10,7 @@ Track the rules, controls, approvals, and operational boundaries that govern Tre
 - Who can administer the system: TBD
 - Approval requirements: DevCraft specs require explicit approval before implementation
 - Business rules: Galaxy is 12x12, each system is 12x12, no more than two enemy ships per system, and some systems may contain planets or bases
-- Persistence rule: Create a session GUID at game start, display it to the player, provide a human-friendly resume code, and use either to restore the exact game state later
+- Persistence rule: Create a session GUID at game start, display it to the player, provide an app-generated human-friendly resume code stored in PascalCase, and use either to restore the exact game state later. Player entry should be case-insensitive.
 
 ## Security Governance
 

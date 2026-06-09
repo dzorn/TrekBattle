@@ -12,11 +12,16 @@ public sealed class GameSessionService
 
     private readonly TrekBattleDbContext _dbContext;
     private readonly IResumeCodeGenerator _resumeCodeGenerator;
+    private readonly ILogger<GameSessionService> _logger;
 
-    public GameSessionService(TrekBattleDbContext dbContext, IResumeCodeGenerator resumeCodeGenerator)
+    public GameSessionService(
+        TrekBattleDbContext dbContext,
+        IResumeCodeGenerator resumeCodeGenerator,
+        ILogger<GameSessionService> logger)
     {
         _dbContext = dbContext;
         _resumeCodeGenerator = resumeCodeGenerator;
+        _logger = logger;
     }
 
     public async Task<GameSessionState> StartNewSessionAsync(
@@ -27,6 +32,11 @@ public sealed class GameSessionService
         var shipName = NormalizeRequiredValue(request.ShipName, nameof(request.ShipName));
         var createdUtc = DateTimeOffset.UtcNow;
 
+        _logger.LogInformation(
+            "Generating a new session for player {PlayerName} and ship {ShipName}.",
+            playerName,
+            shipName);
+
         for (var attempt = 0; attempt < 32; attempt++)
         {
             var resumeCode = _resumeCodeGenerator.Generate();
@@ -36,6 +46,10 @@ public sealed class GameSessionService
                 session => session.ResumeCodeNormalized == resumeCodeNormalized,
                 cancellationToken))
             {
+                _logger.LogInformation(
+                    "Generated recovery code {ResumeCode} was already in use. Retrying attempt {Attempt}.",
+                    resumeCode,
+                    attempt + 1);
                 continue;
             }
 
@@ -63,14 +77,23 @@ public sealed class GameSessionService
             try
             {
                 await _dbContext.SaveChangesAsync(cancellationToken);
+                _logger.LogInformation(
+                    "Saved session {SessionId} with recovery code {ResumeCode}.",
+                    state.SessionId,
+                    state.ResumeCode);
                 return state;
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException exception)
             {
+                _logger.LogWarning(
+                    exception,
+                    "Database write failed while saving session {SessionId}. Retrying if attempts remain.",
+                    state.SessionId);
                 _dbContext.Entry(entity).State = EntityState.Detached;
             }
         }
 
+        _logger.LogError("Unable to generate a unique resume code after multiple attempts.");
         throw new InvalidOperationException("Unable to generate a unique resume code.");
     }
 
@@ -80,13 +103,24 @@ public sealed class GameSessionService
     {
         var resumeCodeNormalized = NormalizeResumeCode(NormalizeRequiredValue(request.ResumeCode, nameof(request.ResumeCode)));
 
+        _logger.LogInformation("Looking up session for recovery code {ResumeCode}.", request.ResumeCode);
+
         var entity = await _dbContext.GameSessions
             .AsNoTracking()
             .SingleOrDefaultAsync(session => session.ResumeCodeNormalized == resumeCodeNormalized, cancellationToken);
 
-        return entity is null
-            ? null
-            : JsonSerializer.Deserialize<GameSessionState>(entity.StateJson, JsonOptions);
+        if (entity is null)
+        {
+            _logger.LogInformation("No session was found for recovery code {ResumeCode}.", request.ResumeCode);
+            return null;
+        }
+
+        _logger.LogInformation(
+            "Loaded session {SessionId} for recovery code {ResumeCode}.",
+            entity.SessionId,
+            entity.ResumeCode);
+
+        return JsonSerializer.Deserialize<GameSessionState>(entity.StateJson, JsonOptions);
     }
 
     private static GameSessionState CreateState(

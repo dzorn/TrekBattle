@@ -10,7 +10,7 @@ var database = sqlServer.AddDatabase(Resources.Base.Database);
 
 var api = builder.AddProject<Projects.TrekBattle_Api>(Resources.Projects.Api)
     .WithReference(database)
-    ;
+    .WaitFor(database);
 
 builder.AddExecutable(
         Resources.Projects.Client,
@@ -21,6 +21,7 @@ builder.AddExecutable(
         "-c",
         "node ./node_modules/@angular/cli/bin/ng serve --port $PORT --proxy-config proxy.conf.cjs")
     .WithHttpEndpoint(port: 4200, env: "PORT")
-    .WithEnvironment("API_BASE_URL", api.GetEndpoint("http"));
+    .WithEnvironment("API_BASE_URL", api.GetEndpoint("http"))
+    .WaitFor(api);
 
 builder.Build().Run();

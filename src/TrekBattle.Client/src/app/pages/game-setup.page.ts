@@ -42,9 +42,18 @@ export class GameSetupPageComponent {
 
     this.gameApi.createSession({ playerName, shipName }).subscribe({
       next: session => {
-        void this.router.navigate(['/launch', session.resumeCode]);
+        console.info('[TrekBattle] Created session', {
+          sessionId: session.sessionId,
+          resumeCode: session.resumeCode,
+        });
+        void this.router.navigate(['/launch', session.resumeCode]).catch(error => {
+          console.error('[TrekBattle] Navigation to launch screen failed.', error);
+          this.errorMessage.set('The session was created, but the launch screen could not open.');
+          this.isSubmitting.set(false);
+        });
       },
-      error: () => {
+      error: error => {
+        console.error('[TrekBattle] Failed to create a new session.', error);
         this.errorMessage.set('We could not start the new mission. Please try again.');
         this.isSubmitting.set(false);
       },
@@ -64,9 +73,18 @@ export class GameSetupPageComponent {
 
     this.gameApi.resumeSession({ resumeCode }).subscribe({
       next: session => {
-        void this.router.navigate(['/launch', session.resumeCode]);
+        console.info('[TrekBattle] Resumed session', {
+          sessionId: session.sessionId,
+          resumeCode: session.resumeCode,
+        });
+        void this.router.navigate(['/launch', session.resumeCode]).catch(error => {
+          console.error('[TrekBattle] Navigation to launch screen failed.', error);
+          this.errorMessage.set('The session was restored, but the launch screen could not open.');
+          this.isSubmitting.set(false);
+        });
       },
-      error: () => {
+      error: error => {
+        console.error('[TrekBattle] Failed to resume session.', error);
         this.errorMessage.set('We could not find a saved session for that resume code.');
         this.isSubmitting.set(false);
       },

@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using TrekBattle.Api.Contracts;
 using TrekBattle.Api.Data;
 using TrekBattle.Api.Services;
@@ -18,7 +19,10 @@ public class GameSessionServiceTests
         await using var dbContext = new TrekBattleDbContext(options);
         await dbContext.Database.EnsureCreatedAsync();
 
-        var service = new GameSessionService(dbContext, new FixedResumeCodeGenerator("DarkAnchor012"));
+        var service = new GameSessionService(
+            dbContext,
+            new FixedResumeCodeGenerator("DarkAnchor012"),
+            NullLogger<GameSessionService>.Instance);
 
         var session = await service.StartNewSessionAsync(
             new StartGameRequest("Elgin", "USS Horizon"),
@@ -44,7 +48,10 @@ public class GameSessionServiceTests
         await using var dbContext = new TrekBattleDbContext(options);
         await dbContext.Database.EnsureCreatedAsync();
 
-        var service = new GameSessionService(dbContext, new FixedResumeCodeGenerator("MerlinBoat444"));
+        var service = new GameSessionService(
+            dbContext,
+            new FixedResumeCodeGenerator("MerlinBoat444"),
+            NullLogger<GameSessionService>.Instance);
 
         var created = await service.StartNewSessionAsync(
             new StartGameRequest("Elgin", "USS Horizon"),

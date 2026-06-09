@@ -5,8 +5,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
-using OpenTelemetry.Exporter;
-using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
@@ -53,7 +51,6 @@ public static class Extensions
         {
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
-            logging.AddOtlpExporter();
         });
 
         builder.Services.AddOpenTelemetry()
@@ -61,8 +58,7 @@ public static class Extensions
             {
                 metrics.AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation()
-                    .AddOtlpExporter();
+                    .AddRuntimeInstrumentation();
             })
             .WithTracing(tracing =>
             {
@@ -75,9 +71,10 @@ public static class Extensions
                     )
                     // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
                     //.AddGrpcClientInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddOtlpExporter();
+                    .AddHttpClientInstrumentation();
             });
+
+        builder.Services.AddOpenTelemetry().UseOtlpExporter();
 
         return builder;
     }

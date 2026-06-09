@@ -16,11 +16,13 @@ if (string.IsNullOrWhiteSpace(connectionString))
     throw new InvalidOperationException($"Missing connection string '{Resources.Base.Database}'.");
 }
 
-builder.Services.AddDbContext<TrekBattleDbContext>(options =>
+builder.Services.AddDbContext<TrekBattleDbContext>((sp, options) =>
 {
     options.UseSqlServer(connectionString);
+    options.AddInterceptors(sp.GetRequiredService<TrekBattleDbSaveChangesInterceptor>());
 });
 
+builder.Services.AddScoped<TrekBattleDbSaveChangesInterceptor>();
 builder.Services.AddScoped<GameSessionService>();
 builder.Services.AddSingleton<IResumeCodeGenerator, ResumeCodeGenerator>();
 
@@ -43,6 +45,40 @@ await using (var scope = app.Services.CreateAsyncScope())
 }
 
 app.UseHttpsRedirection();
+app.Use(async (context, next) =>
+{
+    var requestLogger = context.RequestServices
+        .GetRequiredService<ILoggerFactory>()
+        .CreateLogger("TrekBattle.Api.Requests");
+
+    var started = DateTimeOffset.UtcNow;
+
+    requestLogger.LogInformation(
+        "HTTP {Method} {Path} started.",
+        context.Request.Method,
+        context.Request.Path);
+
+    try
+    {
+        await next();
+        requestLogger.LogInformation(
+            "HTTP {Method} {Path} completed with {StatusCode} in {ElapsedMilliseconds} ms.",
+            context.Request.Method,
+            context.Request.Path,
+            context.Response.StatusCode,
+            (DateTimeOffset.UtcNow - started).TotalMilliseconds);
+    }
+    catch (Exception exception)
+    {
+        requestLogger.LogError(
+            exception,
+            "HTTP {Method} {Path} failed after {ElapsedMilliseconds} ms.",
+            context.Request.Method,
+            context.Request.Path,
+            (DateTimeOffset.UtcNow - started).TotalMilliseconds);
+        throw;
+    }
+});
 app.MapDefaultEndpoints();
 
 var sessions = app.MapGroup("/api/sessions");

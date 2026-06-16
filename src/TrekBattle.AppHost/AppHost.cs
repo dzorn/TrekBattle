@@ -4,7 +4,8 @@ using TrekBattle.AspireConstants;
 var builder = DistributedApplication.CreateBuilder(args);
 
 var sqlServer = builder.AddSqlServer(Resources.Base.SqlServer)
-    .WithDataVolume();
+    // Recreate the database fresh on each AppHost start so the SQL login and schema stay in sync.
+    .WithLifetime(ContainerLifetime.Session);
 
 var database = sqlServer.AddDatabase(Resources.Base.Database);
 

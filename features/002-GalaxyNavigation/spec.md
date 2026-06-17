@@ -27,6 +27,12 @@ The galaxy map uses fog of war until a sector has been visited. A Long Range Sca
 
 The navigation console uses a jump range of 5, which produces an 11x11 navigation grid centered on the ship. Because ship classes are not being defined yet, this range is the default for the feature. Scan symbols are displayed as counts for the current sector using `K`, `P`, and `B` markers, such as `K0`, `P2`, and `B1`. Each sector tracks enemy count, planet count, base count, and whether it has been visited.
 
+Play is turn-based. Each turn allows one action and one movement, but the player may also skip action, movement, or both and still end the turn. For this feature, the only supported action is LRS and the only supported movement is a warp jump. The turn model exists to control pacing and to make future actions and movement rules easier to add later.
+
+The number of turns taken is tracked explicitly and always displayed in the UI. A turn count increments only when the player ends the turn, whether or not action or movement were used. For now, sector scan counts begin at `0` for `K`, `P`, and `B` because galaxy map generation will be handled in a separate feature. As the ship moves or scans, the map state updates and is saved so a session can be restored later without losing the revealed map or turn progress.
+
+The UI includes an End Turn button so the player can commit a completed turn after using action, movement, both, or neither. Even if the player takes no action and no movement, pressing End Turn still counts as a completed turn.
+
 This feature focuses on the galaxy layer only. It does not introduce tactical system combat, ship power allocation, or detailed encounter resolution. The goal is to establish the strategic movement loop that connects startup to the broader game.
 
 ## Goals
@@ -35,6 +41,9 @@ This feature focuses on the galaxy layer only. It does not introduce tactical sy
 - Show the player’s current galaxy position clearly.
 - Let the player inspect nearby galaxy information using the LRS concept.
 - Let the player choose a destination system or sector and travel there.
+- Let the player take one action and one movement per turn.
+- Let the player end the turn after using action, movement, both, or neither.
+- Let the player always see the number of turns taken.
 - Persist the updated galaxy position in the active session state.
 - Keep the navigation UI simple, readable, and easy to use.
 
@@ -69,9 +78,18 @@ The repository will contain a galaxy navigation experience that allows a player 
 - Requirement 9: The navigation console must use a default jump range of 5, represented as an 11x11 grid centered on the ship.
 - Requirement 10: Scan symbols must show sector counts using `K`, `P`, and `B` markers.
 - Requirement 11: Each sector must track enemy count, planet count, base count, and visited state.
-- Requirement 12: Traveling must update the saved session state to the new location.
-- Requirement 13: The interface must stay simple and readable on a typical desktop viewport.
-- Requirement 14: The feature must preserve the existing anonymous session model.
+- Requirement 12: Each sector’s `K`, `P`, and `B` counts must initialize at `0` until a later feature generates galaxy contents.
+- Requirement 13: Play must be turn-based, with one action and one movement allowed per turn.
+- Requirement 14: The player may skip action, movement, or both and still end the turn.
+- Requirement 15: The only supported action at this time is LRS.
+- Requirement 16: The only supported movement at this time is a warp jump.
+- Requirement 17: The number of turns taken must always be visible in the UI.
+- Requirement 18: The UI must include an End Turn button.
+- Requirement 19: Pressing End Turn always produces a completed turn, even if no action or movement was taken.
+- Requirement 20: As the ship moves or scans, the map state must update and be saved for session restoration.
+- Requirement 21: Traveling must update the saved session state to the new location.
+- Requirement 22: The interface must stay simple and readable on a typical desktop viewport.
+- Requirement 23: The feature must preserve the existing anonymous session model.
 
 ## Brainstorming Notes
 
@@ -82,6 +100,7 @@ The repository will contain a galaxy navigation experience that allows a player 
 - Travel should return the player to a stable map state after arrival.
 - If travel rules need to become more sophisticated later, this feature should still provide a clean base layer to build on.
 - Future ship classes may get different travel limits and smaller visible navigation grids, but that is out of scope for this feature.
+- Turn order should be easy to understand so the player can see whether they have used their action, movement, or both.
 
 ## Assumptions
 
@@ -93,6 +112,10 @@ The repository will contain a galaxy navigation experience that allows a player 
 - LRS reveals the ship’s current sector plus adjacent sectors only when they exist inside the 12x12 grid.
 - The default jump range of 5 implies an 11x11 navigation grid centered on the ship.
 - Sector scan summaries should use the form `K#`, `P#`, and `B#`, where the number is the count for that sector.
+- A turn may allow the player to use LRS and then warp jump, or warp jump and then LRS, depending on the UI flow chosen during implementation.
+- Galaxy generation is out of scope for this feature, so all sector scan counts begin at `0` until a later feature populates them.
+- The turn counter is a core piece of visible state and should persist with the session.
+- The End Turn button commits the current turn and advances the counter even if the player used no action or movement.
 
 ## New And Modified Views / Pages
 
@@ -110,6 +133,15 @@ The repository will contain a galaxy navigation experience that allows a player 
 - `Travel Result` - `New`
   - Confirm the ship has arrived at the selected destination.
   - Show the updated location and any navigation summary.
+- `Turn Status` - `New`
+  - Show whether the current turn action or movement has been used.
+  - Indicate when the player may still perform the remaining turn step.
+- `Turn Counter` - `New`
+  - Always display the number of turns taken.
+  - Keep the count visible alongside the navigation UI.
+- `End Turn Button` - `New`
+  - Commit the current turn.
+  - Advance the turn counter.
 
 ## Module User Stories
 
@@ -126,18 +158,24 @@ The repository will contain a galaxy navigation experience that allows a player 
 - Player opens the galaxy map and sees the 12x12 grid.
 - Player can identify the current position on the map.
 - Player starts in a random valid sector and sees that location marked.
+- Player can always see the number of turns taken.
+- Player can end the turn after action, movement, both, or neither.
 
 ##### Edge Case Tests
 
 - The galaxy map remains readable on a narrower desktop viewport.
 - The current location remains visible when the map is refreshed.
 - Fog of war remains in place for unvisited sectors.
+- The turn counter remains visible when the map is refreshed.
+- The End Turn button remains available until the turn is committed.
 
 ##### Negative Tests
 
 - The map does not hide the player location when scan data is missing.
 - Invalid session state does not produce a broken map view.
 - The ship does not appear outside the galaxy bounds.
+- The turn counter does not disappear when map state is partially missing.
+- Ending an empty turn still increments the turn count.
 
 #### Story 2: Inspect Nearby Galaxy Information
 
@@ -151,18 +189,21 @@ The repository will contain a galaxy navigation experience that allows a player 
 - Player can distinguish nearby systems or sectors from unexplored or empty space.
 - Player can see the 3x3 area revealed by LRS when the scan is in bounds.
 - Player can see sector scan counts using `K`, `P`, and `B` symbols.
+- Player can see sector scan counts starting at `0` before galaxy generation exists.
 
 ##### Edge Case Tests
 
 - The scan display stays usable when multiple nearby items are present.
 - The scan display remains clear after moving to a different location.
 - Scanning at the edge only reveals sectors that exist inside the 12x12 grid.
+- The scan display remains accurate after repeated scans in the same session.
 
 ##### Negative Tests
 
 - Missing scan data does not prevent the galaxy map from rendering.
 - The navigation screen does not require tactical system data to load.
 - LRS does not reveal sectors outside the galaxy boundary.
+- Scanning does not reveal or require generated galaxy contents before that feature exists.
 
 #### Story 3: Travel to a Destination
 
@@ -176,18 +217,56 @@ The repository will contain a galaxy navigation experience that allows a player 
 - Player sees confirmation that the ship’s position changed.
 - Player clicks a valid destination on the miniature grid to initiate jump selection.
 - Player can select destinations anywhere within the 11x11 jump range when the location is in bounds.
+- Player sees the turn count remain visible after movement.
+- Player can end the turn after moving without taking an action.
 
 ##### Edge Case Tests
 
 - Player changes destination selection before confirming travel.
 - Player can revisit the galaxy map after arrival and see the updated position.
 - A destination at the edge of the grid remains selectable if it is in bounds.
+- The turn status reflects that movement has been used once the warp jump completes.
+- The map state updates after movement and remains available after session restore.
+- The End Turn button remains available after movement if the player still wants to commit the turn.
 
 ##### Negative Tests
 
 - Player cannot travel outside the bounds of the galaxy.
 - Invalid destinations do not update the saved session state.
 - Clicking outside the galaxy grid does not initiate travel.
+- A second movement in the same turn is not allowed.
+- Movement updates the saved map state so it can be restored later.
+- A turn cannot be committed twice.
+
+#### Story 4: Play One Turn
+
+- As a player
+- I want to take one action and one movement each turn
+- So that the game advances in a predictable rhythm
+
+##### Happy Path Tests
+
+- Player can use LRS once during a turn.
+- Player can perform one warp jump during the same turn.
+- Player sees that both turn steps are available or consumed as they are used.
+- Player sees the turn count update when the turn advances.
+- Player can advance the turn without using action, movement, or either.
+- Player can end an empty turn and still advance the turn count.
+
+##### Edge Case Tests
+
+- Player can use movement before action if the UI permits that order.
+- Turn status stays accurate after a valid action is taken.
+- The turn counter remains accurate after each completed turn.
+- The End Turn button finalizes the turn state.
+
+##### Negative Tests
+
+- Player cannot use LRS more than once in the same turn.
+- Player cannot warp jump more than once in the same turn.
+- Player cannot exceed the one-action and one-move turn limit.
+- Player cannot advance the turn counter without a valid turn state update.
+- Player cannot gain extra turn actions by ending an empty turn.
 
 ### Persistence and Session State
 
@@ -203,18 +282,24 @@ The repository will contain a galaxy navigation experience that allows a player 
 - Reloading the session shows the same updated galaxy position.
 - The set of visited sectors persists with the session state.
 - Sector counts persist with the session state.
+- The turn count persists with the session state.
+- The completed-turn state persists with the session state.
 
 ##### Edge Case Tests
 
 - Travel state remains correct after a browser refresh.
 - A resumed session opens at the last known galaxy location.
 - Previously scanned sectors remain revealed after returning to the map.
+- The turn counter is unchanged after a session restore.
+- The End Turn state is restored correctly after a session reload.
 
 ##### Negative Tests
 
 - Failed travel does not overwrite the previously saved position.
 - Corrupt session data is handled gracefully.
 - A failed scan does not mark out-of-bounds sectors as visited.
+- A failed state update does not lose the current turn count.
+- A failed end-turn update does not double-count the turn.
 
 ## Plan
 
@@ -225,6 +310,8 @@ Describe how the feature will be implemented in phases.
 - Define the galaxy map screen and navigation state needed to render the 12x12 grid.
 - Add the current-location presentation, fog of war, and scan context display.
 - Establish the client-side interaction model for choosing a destination from the 11x11 navigation console.
+- Add a visible turn counter and turn-status display.
+- Add an End Turn button to commit the current turn.
 - Expected outcome: the galaxy map can be viewed as a strategic navigation screen.
 
 ### Phase 2: Travel Flow
@@ -239,6 +326,8 @@ Describe how the feature will be implemented in phases.
 - Persist the updated galaxy location in the active session state.
 - Persist the visited-sector state for fog of war.
 - Persist the sector counts for K, P, and B.
+- Persist the turn counter and turn state.
+- Persist the completed-turn state for the End Turn flow.
 - Implement LRS reveal and update logic for the surrounding 3x3 area centered on the ship.
 - Prevent invalid out-of-bounds travel.
 - Confirm that a resumed session restores the last known galaxy position.
@@ -268,6 +357,9 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Add an 11x11 navigation grid with the ship’s current location displayed.
 - [ ] Show sector scan counts using `K`, `P`, and `B` markers.
 - [ ] Add a destination selection interaction for the navigation console.
+- [ ] Add turn status display for action and movement availability.
+- [ ] Add a turn counter that is always visible in the UI.
+- [ ] Add an End Turn button to commit the current turn.
 
 #### Tests
 
@@ -277,6 +369,9 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Verify fog of war hides unvisited sectors.
 - [ ] Verify the nearby scan/context panel renders when data is present.
 - [ ] Verify sector scan counts render using `K`, `P`, and `B` markers.
+- [ ] Verify the turn status display shows action and movement availability.
+- [ ] Verify the turn counter is always visible.
+- [ ] Verify the End Turn button advances the turn even when action and movement are skipped.
 
 ### Phase 2: Travel Flow
 
@@ -287,6 +382,9 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Show an arrival or travel result state after movement completes.
 - [ ] Restrict movement to in-bounds galaxy destinations.
 - [ ] Restrict destination selection to the 11x11 jump range.
+- [ ] Enforce one action and one movement per turn.
+- [ ] Restrict the action set to LRS.
+- [ ] Restrict the movement set to warp jump.
 
 #### Tests
 
@@ -295,6 +393,8 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Verify a player can return to the galaxy map after travel.
 - [ ] Verify a click outside the galaxy grid does not initiate travel.
 - [ ] Verify a destination outside the 11x11 jump range does not initiate travel.
+- [ ] Verify a second warp jump in the same turn is rejected.
+- [ ] Verify a second LRS in the same turn is rejected.
 
 ### Phase 3: Persistence and Validation
 
@@ -303,8 +403,11 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Persist the updated galaxy location in the session record.
 - [ ] Persist the visited-sector state for fog of war.
 - [ ] Persist the sector counts for each sector.
+- [ ] Initialize all sector counts to `0` until galaxy generation exists.
 - [ ] Reject out-of-bounds destinations.
 - [ ] Implement LRS reveal and update logic for the surrounding 3x3 area centered on the ship.
+- [ ] Persist turn state for action and movement usage.
+- [ ] Persist turn completion state for the End Turn flow.
 - [ ] Restore the last known galaxy position when a session resumes.
 
 #### Tests
@@ -317,6 +420,9 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Verify LRS does not reveal sectors outside the 12x12 galaxy boundary.
 - [ ] Verify the 11x11 navigation grid centers on the ship.
 - [ ] Verify sector counts persist after reload.
+- [ ] Verify the turn state prevents more than one action and one movement per turn.
+- [ ] Verify the turn counter persists after reload.
+- [ ] Verify ending a turn with no action or movement still increments the turn count.
 
 ### Final Phase: Validation And Completion
 

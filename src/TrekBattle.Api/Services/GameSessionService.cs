@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using TrekBattle.Api.Contracts;
@@ -8,6 +9,10 @@ namespace TrekBattle.Api.Services;
 
 public sealed class GameSessionService
 {
+    private const int GalaxyWidth = 12;
+    private const int GalaxyHeight = 12;
+    private const int JumpRange = 5;
+
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     private readonly TrekBattleDbContext _dbContext;
@@ -53,25 +58,14 @@ public sealed class GameSessionService
                 continue;
             }
 
-            var state = CreateState(
+            var state = CreateInitialState(
                 sessionId: Guid.NewGuid(),
                 playerName,
                 shipName,
                 resumeCode,
                 createdUtc);
 
-            var entity = new GameSessionEntity
-            {
-                SessionId = state.SessionId,
-                PlayerName = state.PlayerName,
-                ShipName = state.ShipName,
-                ResumeCode = state.ResumeCode,
-                ResumeCodeNormalized = resumeCodeNormalized,
-                StateJson = JsonSerializer.Serialize(state, JsonOptions),
-                CreatedUtc = createdUtc,
-                UpdatedUtc = createdUtc
-            };
-
+            var entity = CreateEntity(state, resumeCodeNormalized, createdUtc);
             _dbContext.GameSessions.Add(entity);
 
             try
@@ -120,16 +114,183 @@ public sealed class GameSessionService
             entity.SessionId,
             entity.ResumeCode);
 
-        return JsonSerializer.Deserialize<GameSessionState>(entity.StateJson, JsonOptions);
+        return DeserializeState(entity.StateJson);
     }
 
-    private static GameSessionState CreateState(
+    public Task<GameSessionState?> ActivateGalaxyViewAsync(string resumeCode, CancellationToken cancellationToken)
+    {
+        return UpdateSessionAsync(
+            resumeCode,
+            state => state with { CurrentScreen = "Galaxy" },
+            cancellationToken);
+    }
+
+    public Task<GameSessionState?> PerformLongRangeScanAsync(string resumeCode, CancellationToken cancellationToken)
+    {
+        return UpdateSessionAsync(
+            resumeCode,
+            state =>
+            {
+                var galaxyMap = EnsureGalaxyMap(state.GalaxyMap);
+
+                if (galaxyMap.ActionUsed)
+                {
+                    throw new ArgumentException("Long range scan has already been used this turn.", nameof(resumeCode));
+                }
+
+                var updatedSectors = galaxyMap.Sectors
+                    .Select(sector =>
+                    {
+                        var isVisible = Math.Abs(sector.X - galaxyMap.CurrentX) <= 1
+                            && Math.Abs(sector.Y - galaxyMap.CurrentY) <= 1
+                            && IsWithinBounds(sector.X, sector.Y);
+
+                        return isVisible
+                            ? sector with { Visited = true }
+                            : sector;
+                    })
+                    .ToArray();
+
+                return state with
+                {
+                    CurrentScreen = "Galaxy",
+                    GalaxyMap = galaxyMap with
+                    {
+                        ActionUsed = true,
+                        Sectors = updatedSectors
+                    }
+                };
+            },
+            cancellationToken);
+    }
+
+    public Task<GameSessionState?> WarpJumpAsync(
+        string resumeCode,
+        WarpJumpRequest request,
+        CancellationToken cancellationToken)
+    {
+        return UpdateSessionAsync(
+            resumeCode,
+            state =>
+            {
+                var galaxyMap = EnsureGalaxyMap(state.GalaxyMap);
+
+                if (galaxyMap.MovementUsed)
+                {
+                    throw new ArgumentException("Warp jump has already been used this turn.", nameof(resumeCode));
+                }
+
+                if (!IsWithinBounds(request.DestinationX, request.DestinationY))
+                {
+                    throw new ArgumentException("Destination is outside the galaxy boundary.", nameof(request));
+                }
+
+                if (request.DestinationX == galaxyMap.CurrentX && request.DestinationY == galaxyMap.CurrentY)
+                {
+                    throw new ArgumentException("Destination must be different from the current location.", nameof(request));
+                }
+
+                var deltaX = Math.Abs(request.DestinationX - galaxyMap.CurrentX);
+                var deltaY = Math.Abs(request.DestinationY - galaxyMap.CurrentY);
+                if (Math.Max(deltaX, deltaY) > galaxyMap.JumpRange)
+                {
+                    throw new ArgumentException("Destination is outside the warp range.", nameof(request));
+                }
+
+                var updatedSectors = galaxyMap.Sectors
+                    .Select(sector => sector.X == request.DestinationX && sector.Y == request.DestinationY
+                        ? sector with { Visited = true }
+                        : sector)
+                    .ToArray();
+
+                return state with
+                {
+                    CurrentScreen = "Galaxy",
+                    GalaxyMap = galaxyMap with
+                    {
+                        CurrentX = request.DestinationX,
+                        CurrentY = request.DestinationY,
+                        MovementUsed = true,
+                        Sectors = updatedSectors
+                    }
+                };
+            },
+            cancellationToken);
+    }
+
+    public Task<GameSessionState?> EndTurnAsync(string resumeCode, CancellationToken cancellationToken)
+    {
+        return UpdateSessionAsync(
+            resumeCode,
+            state =>
+            {
+                var galaxyMap = EnsureGalaxyMap(state.GalaxyMap);
+
+                return state with
+                {
+                    CurrentScreen = "Galaxy",
+                    GalaxyMap = galaxyMap with
+                    {
+                        CompletedTurns = galaxyMap.CompletedTurns + 1,
+                        ActionUsed = false,
+                        MovementUsed = false
+                    }
+                };
+            },
+            cancellationToken);
+    }
+
+    private async Task<GameSessionState?> UpdateSessionAsync(
+        string resumeCode,
+        Func<GameSessionState, GameSessionState> updater,
+        CancellationToken cancellationToken)
+    {
+        var resumeCodeNormalized = NormalizeResumeCode(NormalizeRequiredValue(resumeCode, nameof(resumeCode)));
+
+        var entity = await _dbContext.GameSessions
+            .SingleOrDefaultAsync(session => session.ResumeCodeNormalized == resumeCodeNormalized, cancellationToken);
+
+        if (entity is null)
+        {
+            _logger.LogInformation("No session was found for recovery code {ResumeCode}.", resumeCode);
+            return null;
+        }
+
+        var currentState = DeserializeState(entity.StateJson);
+        var updatedState = updater(currentState);
+
+        entity.StateJson = JsonSerializer.Serialize(updatedState, JsonOptions);
+        entity.UpdatedUtc = DateTimeOffset.UtcNow;
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return updatedState;
+    }
+
+    private static GameSessionState CreateInitialState(
         Guid sessionId,
         string playerName,
         string shipName,
         string resumeCode,
         DateTimeOffset createdUtc)
     {
+        var currentX = RandomNumberGenerator.GetInt32(GalaxyWidth);
+        var currentY = RandomNumberGenerator.GetInt32(GalaxyHeight);
+        var sectors = new List<GalaxySectorState>(GalaxyWidth * GalaxyHeight);
+
+        for (var y = 0; y < GalaxyHeight; y++)
+        {
+            for (var x = 0; x < GalaxyWidth; x++)
+            {
+                sectors.Add(new GalaxySectorState(
+                    x,
+                    y,
+                    EnemyCount: 0,
+                    PlanetCount: 0,
+                    BaseCount: 0,
+                    Visited: x == currentX && y == currentY));
+            }
+        }
+
         return new GameSessionState(
             sessionId,
             playerName,
@@ -139,7 +300,51 @@ public sealed class GameSessionService
             GameContent.MissionBrief,
             GameContent.MissionObjective,
             "Launch",
-            createdUtc);
+            createdUtc,
+            new GalaxyMapState(
+                GalaxyWidth,
+                GalaxyHeight,
+                JumpRange,
+                currentX,
+                currentY,
+                CompletedTurns: 0,
+                ActionUsed: false,
+                MovementUsed: false,
+                Sectors: sectors));
+    }
+
+    private static GameSessionEntity CreateEntity(
+        GameSessionState state,
+        string resumeCodeNormalized,
+        DateTimeOffset createdUtc)
+    {
+        return new GameSessionEntity
+        {
+            SessionId = state.SessionId,
+            PlayerName = state.PlayerName,
+            ShipName = state.ShipName,
+            ResumeCode = state.ResumeCode,
+            ResumeCodeNormalized = resumeCodeNormalized,
+            StateJson = JsonSerializer.Serialize(state, JsonOptions),
+            CreatedUtc = createdUtc,
+            UpdatedUtc = createdUtc
+        };
+    }
+
+    private static GameSessionState DeserializeState(string stateJson)
+    {
+        return JsonSerializer.Deserialize<GameSessionState>(stateJson, JsonOptions)
+            ?? throw new InvalidOperationException("Saved session state could not be read.");
+    }
+
+    private static GalaxyMapState EnsureGalaxyMap(GalaxyMapState galaxyMap)
+    {
+        return galaxyMap with { };
+    }
+
+    private static bool IsWithinBounds(int x, int y)
+    {
+        return x >= 0 && x < GalaxyWidth && y >= 0 && y < GalaxyHeight;
     }
 
     private static string NormalizeRequiredValue(string? value, string parameterName)

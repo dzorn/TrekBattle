@@ -22,7 +22,7 @@ builder.AddExecutable(
         "-c",
         "node ./node_modules/@angular/cli/bin/ng serve --port $PORT --proxy-config proxy.conf.cjs")
     .WithHttpEndpoint(port: 4200, env: "PORT")
-    .WithEnvironment("API_BASE_URL", api.GetEndpoint("http"))
+    .WithEnvironment("API_BASE_URL", api.GetEndpoint("https"))
     .WaitFor(api);
 
 builder.Build().Run();

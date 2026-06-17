@@ -5,7 +5,7 @@
 - Active Mode: `DevCraft`
 - Project Name: `TrekBattle`
 - Primary Goal: Build a Star Trek-inspired strategy and combat game with a simple interface, grid-based galaxy navigation, scanning, and ship system management.
-- Current Status: Discovery in progress
+- Current Status: Galaxy navigation feature implemented; next gameplay slice pending
 - Branching Model: `Simple Branching` pending git initialization
 - Master Branch: Not initialized yet
 
@@ -44,9 +44,9 @@
 
 ## Current Priorities
 
-- Priority 1: Confirm the delivery platform and architecture direction
-- Priority 2: Establish the repo structure and work-management approach
-- Priority 3: Begin the first approved spec only after discovery is clear
+- Priority 1: Continue the next approved gameplay feature from the galaxy navigation baseline
+- Priority 2: Keep session state and map-state persistence aligned across client and API
+- Priority 3: Update project context as gameplay features land
 
 ## Working Agreements
 

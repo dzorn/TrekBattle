@@ -10,6 +10,8 @@ TrekBattle is a strategy and combat game inspired by the original console CLI St
 - System: A 12x12 local grid where the player can navigate, scan, and fight.
 - Krutz: Enemy ships dispersed throughout the galaxy.
 - LRS: Long range scan used to inspect nearby galaxy sectors.
+- Warp jump: The only supported movement in the current galaxy feature slice.
+- End Turn: The control that completes a turn even when no action or movement was taken.
 - Ship Systems: Shields, torpedoes, phasers, impulse drive, warp drive, and scanners.
 - Power Distribution: Player-controlled allocation of ship power to improve system efficiency.
 
@@ -26,6 +28,7 @@ TrekBattle is a strategy and combat game inspired by the original console CLI St
 - Ship systems and power allocation
 - Combat and enemy AI
 - UI and mode switching
+- Turn-based galaxy pacing
 
 ## Tables
 
@@ -42,8 +45,10 @@ TrekBattle is a strategy and combat game inspired by the original console CLI St
 - 12x12 galaxy grid
 - 12x12 system grid
 - Galaxy travel map
+- Fog of war and visited sectors
 - Current system scan view
 - Long range scan view
+- Turn counter and end-turn flow
 - Mode switching between views
 - Ship power allocation
 - Enemy ships, planets, and bases
@@ -61,6 +66,8 @@ TrekBattle is a strategy and combat game inspired by the original console CLI St
 - Requirement 8: Resume codes are stored in PascalCase but may be entered case-insensitively.
 - Requirement 9: The startup screen must allow a player to enter an existing resume code to restore a previous session.
 - Requirement 10: Resuming a session must restore the exact saved game state.
+- Requirement 11: Galaxy navigation uses turn-based play with LRS, warp jump, fog of war, and end-turn pacing.
+- Requirement 12: Sector scan counts currently initialize to `0` until galaxy generation is added in a later feature.
 
 ## Use Cases
 
@@ -70,6 +77,7 @@ TrekBattle is a strategy and combat game inspired by the original console CLI St
 - Use Case 4: Player engages Krutz ships in a system.
 - Use Case 5: Player saves the session GUID and later resumes the same game state.
 - Use Case 6: Player uses a resume code to return to an existing game session.
+- Use Case 7: Player scans nearby sectors, warps to a destination, and ends the turn.
 
 ## Actors
 
@@ -91,3 +99,4 @@ TrekBattle is a strategy and combat game inspired by the original console CLI St
 
 - 2026-06-03: Initialized the DevCraft project context with provisional values and discovery placeholders.
 - 2026-06-03: Captured the core game concept, grid structure, ship systems, scan modes, and encounter rules.
+- 2026-06-17: Added the turn-based galaxy navigation slice with fog of war, LRS, warp jump, and turn tracking.

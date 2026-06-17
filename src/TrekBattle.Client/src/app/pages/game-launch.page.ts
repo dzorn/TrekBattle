@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { GameSessionState } from '../models/game-session.model';
 import { GameApiService } from '../services/game-api.service';
+import { GameSessionState } from '../models/game-session.model';
 
 @Component({
   standalone: true,
@@ -38,6 +38,19 @@ export class GameLaunchPageComponent {
         this.loadError.set('We could not load that session. Try the resume code again.');
         this.loading.set(false);
       },
+    });
+  }
+
+  protected enterGalaxy(): void {
+    const game = this.session();
+
+    if (!game) {
+      return;
+    }
+
+    void this.router.navigate(['/galaxy', game.resumeCode]).catch(error => {
+      console.error('[TrekBattle] Navigation to galaxy screen failed.', error);
+      this.loadError.set('The session loaded, but the galaxy view could not open.');
     });
   }
 }

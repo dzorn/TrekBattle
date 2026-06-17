@@ -1,0 +1,235 @@
+.galaxy-layout {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.board-stack {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 1.25rem;
+}
+
+.panel {
+  padding: 1.5rem;
+  border: 1px solid rgba(172, 194, 255, 0.15);
+  border-radius: 1.5rem;
+  background: rgba(8, 15, 31, 0.72);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.status-panel {
+  margin-bottom: 1.25rem;
+}
+
+.notice {
+  border-color: rgba(122, 246, 199, 0.24);
+}
+
+.section-label {
+  margin: 0;
+  color: #8cb8ff;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.76rem;
+}
+
+.command-panel h2,
+.map-panel h3,
+.nav-panel h3 {
+  margin: 0.35rem 0 0;
+  line-height: 1.05;
+}
+
+.subtle {
+  color: rgba(244, 247, 251, 0.82);
+}
+
+.command-header,
+.panel-head {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.turn-card,
+.legend-chip {
+  display: inline-grid;
+  gap: 0.2rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(180, 208, 255, 0.14);
+  background: linear-gradient(135deg, rgba(86, 164, 255, 0.16), rgba(30, 233, 163, 0.12));
+}
+
+.turn-card span,
+.command-grid span,
+.tile-coord,
+.console-note {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(244, 247, 251, 0.68);
+}
+
+.turn-card strong {
+  font-size: 1.4rem;
+}
+
+.command-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+}
+
+.command-grid div {
+  padding: 0.9rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(177, 196, 255, 0.14);
+  background: rgba(2, 7, 19, 0.46);
+}
+
+.command-grid strong {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+.command-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+}
+
+button,
+a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: 0.95rem;
+  border: 0;
+  background: linear-gradient(135deg, #7eb5ff, #7af6c7);
+  color: #08101f;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: linear-gradient(135deg, #ffc66e, #ff8f5c);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.sector-board,
+.navigation-board {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.sector-board {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.navigation-board {
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+}
+
+.sector-tile,
+.nav-tile,
+.nav-void {
+  min-height: 5.25rem;
+  padding: 0.55rem;
+  border-radius: 0.9rem;
+}
+
+.sector-tile,
+.nav-tile {
+  display: grid;
+  gap: 0.25rem;
+  border: 1px solid rgba(177, 196, 255, 0.16);
+  background: rgba(2, 7, 19, 0.76);
+  color: #f4f7fb;
+  text-align: left;
+}
+
+.sector-tile.fog,
+.nav-tile.fog {
+  border-style: dashed;
+  background: rgba(2, 7, 19, 0.5);
+  color: rgba(244, 247, 251, 0.62);
+}
+
+.sector-tile.visited,
+.nav-tile.visited {
+  box-shadow: inset 0 0 0 1px rgba(122, 246, 199, 0.06);
+}
+
+.sector-tile.current,
+.nav-tile.current {
+  background: linear-gradient(135deg, rgba(86, 164, 255, 0.22), rgba(30, 233, 163, 0.14));
+  border-color: rgba(122, 246, 199, 0.38);
+}
+
+.sector-tile strong,
+.nav-tile strong {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.sector-tile small,
+.nav-tile small {
+  color: rgba(244, 247, 251, 0.72);
+}
+
+.nav-void {
+  border: 1px solid rgba(177, 196, 255, 0.07);
+  background: rgba(2, 7, 19, 0.18);
+}
+
+.console-note {
+  margin: 1rem 0 0;
+}
+
+@media (max-width: 1120px) {
+  .board-stack {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 920px) {
+  .command-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .command-header,
+  .panel-head {
+    flex-direction: column;
+  }
+
+  .sector-board {
+    gap: 0.25rem;
+  }
+
+  .sector-tile,
+  .nav-tile,
+  .nav-void {
+    min-height: 4.5rem;
+    padding: 0.45rem;
+  }
+
+  .navigation-board {
+    gap: 0.25rem;
+  }
+}

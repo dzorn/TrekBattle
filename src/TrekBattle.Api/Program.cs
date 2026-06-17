@@ -140,6 +140,95 @@ sessions.MapPost("/resume", async (
     }, requestLogger, "resume a session");
 });
 
+sessions.MapPost("/{resumeCode}/activate-galaxy", async (
+    string resumeCode,
+    GameSessionService sessionService,
+    ILogger<Program> requestLogger,
+    CancellationToken cancellationToken) =>
+{
+    requestLogger.LogInformation("Activating galaxy view for recovery code {ResumeCode}.", resumeCode);
+
+    return await ExecuteSessionAction(async () =>
+    {
+        var updated = await sessionService.ActivateGalaxyViewAsync(resumeCode, cancellationToken);
+        return updated is null
+            ? Results.NotFound(new ProblemDetails
+            {
+                Title = "Resume code not found",
+                Detail = $"No saved session exists for resume code '{resumeCode}'."
+            })
+            : Results.Ok(updated);
+    }, requestLogger, "activate the galaxy view");
+});
+
+sessions.MapPost("/{resumeCode}/lrs", async (
+    string resumeCode,
+    GameSessionService sessionService,
+    ILogger<Program> requestLogger,
+    CancellationToken cancellationToken) =>
+{
+    requestLogger.LogInformation("Executing LRS for recovery code {ResumeCode}.", resumeCode);
+
+    return await ExecuteSessionAction(async () =>
+    {
+        var updated = await sessionService.PerformLongRangeScanAsync(resumeCode, cancellationToken);
+        return updated is null
+            ? Results.NotFound(new ProblemDetails
+            {
+                Title = "Resume code not found",
+                Detail = $"No saved session exists for resume code '{resumeCode}'."
+            })
+            : Results.Ok(updated);
+    }, requestLogger, "perform a long range scan");
+});
+
+sessions.MapPost("/{resumeCode}/warp", async (
+    string resumeCode,
+    WarpJumpRequest request,
+    GameSessionService sessionService,
+    ILogger<Program> requestLogger,
+    CancellationToken cancellationToken) =>
+{
+    requestLogger.LogInformation(
+        "Executing warp jump for recovery code {ResumeCode} to {DestinationX},{DestinationY}.",
+        resumeCode,
+        request.DestinationX,
+        request.DestinationY);
+
+    return await ExecuteSessionAction(async () =>
+    {
+        var updated = await sessionService.WarpJumpAsync(resumeCode, request, cancellationToken);
+        return updated is null
+            ? Results.NotFound(new ProblemDetails
+            {
+                Title = "Resume code not found",
+                Detail = $"No saved session exists for resume code '{resumeCode}'."
+            })
+            : Results.Ok(updated);
+    }, requestLogger, "warp to a new sector");
+});
+
+sessions.MapPost("/{resumeCode}/end-turn", async (
+    string resumeCode,
+    GameSessionService sessionService,
+    ILogger<Program> requestLogger,
+    CancellationToken cancellationToken) =>
+{
+    requestLogger.LogInformation("Ending turn for recovery code {ResumeCode}.", resumeCode);
+
+    return await ExecuteSessionAction(async () =>
+    {
+        var updated = await sessionService.EndTurnAsync(resumeCode, cancellationToken);
+        return updated is null
+            ? Results.NotFound(new ProblemDetails
+            {
+                Title = "Resume code not found",
+                Detail = $"No saved session exists for resume code '{resumeCode}'."
+            })
+            : Results.Ok(updated);
+    }, requestLogger, "end the current turn");
+});
+
 app.MapGet("/", () => Results.Ok(new
 {
     name = "TrekBattle API",

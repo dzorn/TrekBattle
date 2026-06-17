@@ -6,6 +6,7 @@ import {
   GameSessionState,
   ResumeGameRequest,
   StartGameRequest,
+  WarpJumpRequest,
 } from '../models/game-session.model';
 
 @Injectable({ providedIn: 'root' })
@@ -22,5 +23,21 @@ export class GameApiService {
 
   loadSession(resumeCode: string): Observable<GameSessionState> {
     return this.resumeSession({ resumeCode });
+  }
+
+  activateGalaxyView(resumeCode: string): Observable<GameSessionState> {
+    return this.http.post<GameSessionState>(`/api/sessions/${encodeURIComponent(resumeCode)}/activate-galaxy`, {});
+  }
+
+  performLongRangeScan(resumeCode: string): Observable<GameSessionState> {
+    return this.http.post<GameSessionState>(`/api/sessions/${encodeURIComponent(resumeCode)}/lrs`, {});
+  }
+
+  warpJump(resumeCode: string, request: WarpJumpRequest): Observable<GameSessionState> {
+    return this.http.post<GameSessionState>(`/api/sessions/${encodeURIComponent(resumeCode)}/warp`, request);
+  }
+
+  endTurn(resumeCode: string): Observable<GameSessionState> {
+    return this.http.post<GameSessionState>(`/api/sessions/${encodeURIComponent(resumeCode)}/end-turn`, {});
   }
 }

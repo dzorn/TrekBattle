@@ -9,6 +9,7 @@ module.exports = {
     browserName: 'chromium',
     channel: 'chrome',
     headless: true,
+    ignoreHTTPSErrors: true,
     viewport: { width: 1440, height: 1080 },
     trace: 'on-first-retry',
   },

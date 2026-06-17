@@ -13,14 +13,14 @@ function parseLocation(locationText: string): { x: number; y: number } {
 }
 
 function chooseWarpDestination(currentX: number, currentY: number): { x: number; y: number } {
-  if (currentX < 11) {
+  if (currentX < 10) {
     return { x: currentX + 1, y: currentY };
   }
 
   return { x: currentX - 1, y: currentY };
 }
 
-test('player can scan, warp, and end a turn in the galaxy view', async ({ page }) => {
+test('player can scan, select movement, and end a turn in the galaxy view', async ({ page }) => {
   const created = await page.request.post('/api/sessions', {
     data: {
       playerName: 'Elgin',
@@ -52,7 +52,20 @@ test('player can scan, warp, and end a turn in the galaxy view', async ({ page }
   await expect(page.getByTestId(`galaxy-cell-${scanTarget.x}-${scanTarget.y}`)).not.toContainText('Fog');
   await expect(page.getByTestId('turn-counter')).toHaveText('0');
 
-  await page.getByTestId(`nav-cell-${warpDestination.x}-${warpDestination.y}`).click();
+  const currentNavCell = page.getByTestId(`nav-cell-${currentLocation.x}-${currentLocation.y}`);
+  const selectedNavCell = page.getByTestId(`nav-cell-${warpDestination.x}-${warpDestination.y}`);
+
+  await selectedNavCell.click();
+  await expect(selectedNavCell).toHaveClass(/selected/);
+
+  await currentNavCell.click();
+  await expect(selectedNavCell).not.toHaveClass(/selected/);
+
+  await selectedNavCell.click();
+  await expect(selectedNavCell).toHaveClass(/selected/);
+
+  await page.getByRole('button', { name: 'End Turn' }).click();
+  await expect(page.getByTestId('turn-counter')).toHaveText('1');
 
   const updatedLocationText = await page.getByTestId('current-location').textContent();
   if (!updatedLocationText) {
@@ -61,8 +74,5 @@ test('player can scan, warp, and end a turn in the galaxy view', async ({ page }
 
   const updatedLocation = parseLocation(updatedLocationText);
   expect(updatedLocation).toEqual(warpDestination);
-  await expect(page.getByTestId('turn-counter')).toHaveText('0');
-
-  await page.getByRole('button', { name: 'End Turn' }).click();
-  await expect(page.getByTestId('turn-counter')).toHaveText('1');
+  await expect(selectedNavCell).not.toHaveClass(/selected/);
 });

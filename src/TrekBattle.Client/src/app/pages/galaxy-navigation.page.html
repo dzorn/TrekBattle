@@ -15,6 +15,49 @@
 
 @if (session(); as game) {
   <section class="galaxy-layout">
+    <article class="panel map-panel">
+      <div class="panel-head">
+        <div>
+          <p class="section-label">Galaxy Map</p>
+          <h3>Fog clears as you visit sectors.</h3>
+        </div>
+        <span class="legend-chip">12x12 grid</span>
+      </div>
+
+      <div class="sector-board">
+        @for (y of sectorRows; track y) {
+          @for (x of sectorCols; track x) {
+            @let sector = getGalaxySector(x, y);
+            <div
+              class="sector-tile"
+              [class.current]="isCurrentSector(x, y)"
+              [class.visited]="sector?.visited"
+              [class.fog]="!sector?.visited"
+              [attr.data-testid]="'galaxy-cell-' + x + '-' + y"
+            >
+              <span class="tile-coord">{{ x + 1 }},{{ y + 1 }}</span>
+              <strong>
+                @if (isCurrentSector(x, y)) {
+                  SHIP
+                } @else if (sector?.visited) {
+                  {{ sectorTitle(sector) }}
+                } @else {
+                  Fog
+                }
+              </strong>
+              <small>
+                @if (sector?.visited) {
+                  {{ sectorSubtitle(sector) }}
+                } @else {
+                  Unvisited
+                }
+              </small>
+            </div>
+          }
+        }
+      </div>
+    </article>
+
     <article class="panel command-panel">
       <div class="command-header">
         <div>
@@ -58,52 +101,6 @@
       </div>
 
       <a [routerLink]="['/launch', game.resumeCode]">Back to launch</a>
-    </article>
-
-    <section class="board-stack">
-      <article class="panel map-panel">
-        <div class="panel-head">
-          <div>
-            <p class="section-label">Galaxy Map</p>
-            <h3>Fog clears as you visit sectors.</h3>
-          </div>
-          <span class="legend-chip">12x12 grid</span>
-        </div>
-
-        <div class="sector-board">
-          @for (y of sectorRows; track y) {
-            @for (x of sectorCols; track x) {
-              @let sector = getGalaxySector(x, y);
-              <div
-                class="sector-tile"
-                [class.current]="isCurrentSector(x, y)"
-                [class.visited]="sector?.visited"
-                [class.fog]="!sector?.visited"
-                [attr.data-testid]="'galaxy-cell-' + x + '-' + y"
-              >
-                <span class="tile-coord">{{ x + 1 }},{{ y + 1 }}</span>
-                <strong>
-                  @if (isCurrentSector(x, y)) {
-                    SHIP
-                  } @else if (sector?.visited) {
-                    {{ sectorTitle(sector) }}
-                  } @else {
-                    Fog
-                  }
-                </strong>
-                <small>
-                  @if (sector?.visited) {
-                    {{ sectorSubtitle(sector) }}
-                  } @else {
-                    Unvisited
-                  }
-                </small>
-              </div>
-            }
-          }
-        </div>
-      </article>
-
       <article class="panel nav-panel">
         <div class="panel-head">
           <div>
@@ -117,36 +114,19 @@
           @for (row of navigationGrid; track $index) {
             @for (cell of row; track cell.x + '-' + cell.y) {
               @if (cell.inBounds) {
-                @let sector = getGalaxySector(cell.x, cell.y);
                 <button
                   type="button"
                   class="nav-tile"
-                  [class.current]="isCurrentSector(cell.x, cell.y)"
-                  [class.visited]="sector?.visited"
-                  [class.fog]="!sector?.visited"
-                  [disabled]="busy() || !canWarpTo(cell.x, cell.y)"
+                  [class.current]="movementTileState(cell.x, cell.y) === 'current'"
+                  [class.selected]="movementTileState(cell.x, cell.y) === 'selected'"
+                  [class.available]="movementTileState(cell.x, cell.y) === 'available'"
+                  [class.unselected]="movementTileState(cell.x, cell.y) === 'unselected'"
+                  [disabled]="busy() || !canSelectMovementCell(cell.x, cell.y)"
+                  [attr.aria-label]="'Select warp destination ' + (cell.x + 1) + ',' + (cell.y + 1)"
                   [attr.data-testid]="'nav-cell-' + cell.x + '-' + cell.y"
-                  (click)="warpTo(cell.x, cell.y)"
+                  (click)="selectWarpDestination(cell.x, cell.y)"
                 >
-                  <span class="tile-coord">{{ cell.x + 1 }},{{ cell.y + 1 }}</span>
-                  <strong>
-                    @if (isCurrentSector(cell.x, cell.y)) {
-                      SHIP
-                    } @else if (sector?.visited) {
-                      {{ sectorTitle(sector) }}
-                    } @else {
-                      Fog
-                    }
-                  </strong>
-                  <small>
-                    @if (isCurrentSector(cell.x, cell.y)) {
-                      Current
-                    } @else if (sector?.visited) {
-                      Click to warp
-                    } @else {
-                      Unvisited
-                    }
-                  </small>
+                  <span class="sr-only">{{ cell.x + 1 }},{{ cell.y + 1 }}</span>
                 </button>
               } @else {
                 <div class="nav-void" aria-hidden="true"></div>
@@ -156,9 +136,9 @@
         </div>
 
         <p class="subtle console-note">
-          Click a valid destination to initiate a warp jump. The galaxy edge is a hard boundary.
+          Click a valid destination to select a warp target. Click the ship square or the selected square again to clear movement. The galaxy edge is a hard boundary.
         </p>
       </article>
-    </section>
+    </article>
   </section>
 }

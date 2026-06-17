@@ -3,12 +3,6 @@
   gap: 1.25rem;
 }
 
-.board-stack {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 1.25rem;
-}
-
 .panel {
   padding: 1.5rem;
   border: 1px solid rgba(172, 194, 255, 0.15);
@@ -196,19 +190,75 @@ button:disabled {
   background: rgba(2, 7, 19, 0.18);
 }
 
+.navigation-board {
+  gap: 0.2rem;
+}
+
+.nav-tile {
+  aspect-ratio: 1;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  background: #d8dbe2;
+  color: #1b2233;
+  border-color: #bcc4d3;
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: none;
+}
+
+.nav-tile.current {
+  background: #26a845;
+  color: #ffffff;
+  border-color: #1d7f33;
+}
+
+.nav-tile.current .tile-coord,
+.nav-tile.current small {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.nav-tile.selected {
+  background: #d82f2f;
+  color: #ffffff;
+  border-color: #a81f1f;
+}
+
+.nav-tile.selected .tile-coord,
+.nav-tile.selected small {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.nav-tile.available {
+  cursor: pointer;
+}
+
+.nav-tile.unselected {
+  opacity: 0.96;
+}
+
+.nav-tile:focus-visible {
+  outline: 2px solid #7af6c7;
+  outline-offset: 2px;
+}
+
 .console-note {
   margin: 1rem 0 0;
 }
 
 @media (max-width: 1120px) {
-  .board-stack {
-    grid-template-columns: 1fr;
+  .galaxy-layout {
+    gap: 1rem;
   }
 }
 
 @media (max-width: 920px) {
   .command-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .navigation-board {
+    gap: 0.16rem;
   }
 }
 
@@ -232,4 +282,20 @@ button:disabled {
   .navigation-board {
     gap: 0.25rem;
   }
+
+  .nav-tile {
+    min-height: 0;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

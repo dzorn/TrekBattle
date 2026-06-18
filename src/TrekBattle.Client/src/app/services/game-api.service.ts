@@ -29,7 +29,7 @@ export class GameApiService {
     return this.http.post<GameSessionState>(`/api/sessions/${encodeURIComponent(resumeCode)}/activate-galaxy`, {});
   }
 
-  performLongRangeScan(resumeCode: string): Observable<GameSessionState> {
+  toggleLongRangeScan(resumeCode: string): Observable<GameSessionState> {
     return this.http.post<GameSessionState>(`/api/sessions/${encodeURIComponent(resumeCode)}/lrs`, {});
   }
 

@@ -19,6 +19,7 @@ export interface GalaxySectorState {
   planetCount: number;
   baseCount: number;
   visited: boolean;
+  scanned: boolean;
 }
 
 export interface GalaxyMapState {

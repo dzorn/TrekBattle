@@ -21,17 +21,17 @@ Draft
 
 ## Overview
 
-Galaxy Navigation is the first gameplay feature beyond startup. The galaxy map is the primary view screen, and the player’s ship begins in a random sector on the 12x12 grid. The player can see the current ship position on the map, use a navigation console with a miniature galaxy grid, and click another valid grid location to initiate a jump.
+Galaxy Navigation is the first gameplay feature beyond startup. The galaxy map is the primary view screen, and the player’s ship begins in a random sector on the 12x12 grid. The player can see the current ship position on the map, use a navigation console with a fixed 11x11 range grid, and click a jump target to initiate movement.
 
 The galaxy map uses fog of war until a sector has been visited. A Long Range Scan (LRS) reveals or updates the surrounding 3x3 area centered on the ship, which means the ship’s current sector plus the 8 adjacent sectors when they are in bounds. The edges of the 12x12 galaxy are hard boundaries for both movement and scanning.
 
-The navigation console uses a jump range of 5, which produces an 11x11 navigation grid centered on the ship. Because ship classes are not being defined yet, this range is the default for the feature. Scan symbols are displayed as counts for the current sector using `K`, `P`, and `B` markers, such as `K0`, `P2`, and `B1`. Each sector tracks enemy count, planet count, base count, and whether it has been visited.
+The navigation console uses a jump range of 5, which produces an 11x11 range grid centered on the ship. The console does not mirror the galaxy map; it only represents the ship, the available range surface, and the selected jump target. Because ship classes are not being defined yet, this range is the default for the feature. Scan symbols are displayed as counts for the current sector using `K`, `P`, and `B` markers, such as `K0`, `P2`, and `B1`. Each sector tracks enemy count, planet count, base count, whether it has been visited, and whether it has been scanned.
 
-Play is turn-based. Each turn allows one action and one movement, but the player may also skip action, movement, or both and still end the turn. For this feature, the only supported action is LRS and the only supported movement is a warp jump. The turn model exists to control pacing and to make future actions and movement rules easier to add later.
+Play is turn-based. Each turn allows one queued action and one movement, but the player may also skip action, movement, or both and still end the turn. For this feature, the only supported action is LRS and the only supported movement is a warp jump. The turn model exists to control pacing and to make future actions and movement rules easier to add later. The player queues LRS through the command console and End Turn resolves the queued action before applying any selected movement.
 
 The number of turns taken is tracked explicitly and always displayed in the UI. A turn count increments only when the player ends the turn, whether or not action or movement were used. For now, sector scan counts begin at `0` for `K`, `P`, and `B` because galaxy map generation will be handled in a separate feature. As the ship moves or scans, the map state updates and is saved so a session can be restored later without losing the revealed map or turn progress.
 
-The UI includes an End Turn button so the player can commit a completed turn after using action, movement, both, or neither. Even if the player takes no action and no movement, pressing End Turn still counts as a completed turn.
+The UI includes an End Turn button so the player can commit a completed turn after using action, movement, both, or neither. The command section uses a toggle for the LRS action instead of an immediate action button. Even if the player takes no action and no movement, pressing End Turn still counts as a completed turn.
 
 This feature focuses on the galaxy layer only. It does not introduce tactical system combat, ship power allocation, or detailed encounter resolution. The goal is to establish the strategic movement loop that connects startup to the broader game.
 
@@ -41,7 +41,7 @@ This feature focuses on the galaxy layer only. It does not introduce tactical sy
 - Show the player’s current galaxy position clearly.
 - Let the player inspect nearby galaxy information using the LRS concept.
 - Let the player choose a destination system or sector and travel there.
-- Let the player take one action and one movement per turn.
+- Let the player queue one action and one movement per turn.
 - Let the player end the turn after using action, movement, both, or neither.
 - Let the player always see the number of turns taken.
 - Persist the updated galaxy position in the active session state.
@@ -70,11 +70,11 @@ The repository will contain a galaxy navigation experience that allows a player 
 - Requirement 1: The galaxy map must represent the galaxy as a 12x12 grid.
 - Requirement 2: The player’s ship must begin at a random valid sector on game start.
 - Requirement 3: The UI must show the player’s current location on the galaxy map.
-- Requirement 4: The navigation console must include a miniature galaxy grid with the ship’s current location displayed.
-- Requirement 5: The player must be able to click another valid grid location to initiate a jump.
+- Requirement 4: The navigation console must include an 11x11 range grid centered on the ship.
+- Requirement 5: The player must be able to click a grid location to initiate a jump, and jumps outside the galaxy boundary must clamp to the edge.
 - Requirement 6: A Long Range Scan (LRS) must reveal or update the surrounding 3x3 area centered on the ship, when in bounds.
 - Requirement 7: The galaxy map must use fog of war until a sector has been visited.
-- Requirement 8: Traveling and scanning must respect the 12x12 galaxy edge as a hard boundary.
+- Requirement 8: Traveling and scanning must respect the 12x12 galaxy edge as a hard boundary, and warp movement that extends past the edge must stop at the edge.
 - Requirement 9: The navigation console must use a default jump range of 5, represented as an 11x11 grid centered on the ship.
 - Requirement 10: Scan symbols must show sector counts using `K`, `P`, and `B` markers.
 - Requirement 11: Each sector must track enemy count, planet count, base count, and visited state.
@@ -110,12 +110,13 @@ The repository will contain a galaxy navigation experience that allows a player 
 - The player’s current location is the primary state change to preserve for this feature.
 - If later rules require travel costs, those can be added as a follow-on feature rather than blocking the first version of navigation.
 - LRS reveals the ship’s current sector plus adjacent sectors only when they exist inside the 12x12 grid.
-- The default jump range of 5 implies an 11x11 navigation grid centered on the ship.
+- The default jump range of 5 implies an 11x11 range grid centered on the ship.
 - Sector scan summaries should use the form `K#`, `P#`, and `B#`, where the number is the count for that sector.
-- A turn may allow the player to use LRS and then warp jump, or warp jump and then LRS, depending on the UI flow chosen during implementation.
+- A turn resolves queued LRS before resolving any selected warp jump when the player ends the turn.
 - Galaxy generation is out of scope for this feature, so all sector scan counts begin at `0` until a later feature populates them.
 - The turn counter is a core piece of visible state and should persist with the session.
 - The End Turn button commits the current turn and advances the counter even if the player used no action or movement.
+- The navigation console is a range display and does not mirror the galaxy map’s visited or fog state.
 
 ## New And Modified Views / Pages
 
@@ -126,10 +127,14 @@ The repository will contain a galaxy navigation experience that allows a player 
   - Surface nearby scan context.
   - Let the player choose a destination.
 - `Navigation Console` - `New`
-  - Show the 11x11 navigation grid.
-  - Display the ship’s current location on the miniature grid.
+  - Show the 11x11 range grid.
+  - Display the ship’s range origin and selected jump target.
   - Provide the click target for jump selection.
-  - Show sector scan counts using `K`, `P`, and `B` symbols.
+  - Keep the cells light gray unless they represent the ship or the selected jump target.
+- `Galaxy Command` - `Updated`
+  - Add an LRS toggle to queue the action.
+  - Remove the standalone Long Range Scan button.
+  - Resolve queued LRS before movement when ending the turn.
 - `Travel Result` - `New`
   - Confirm the ship has arrived at the selected destination.
   - Show the updated location and any navigation summary.
@@ -197,6 +202,7 @@ The repository will contain a galaxy navigation experience that allows a player 
 - The scan display remains clear after moving to a different location.
 - Scanning at the edge only reveals sectors that exist inside the 12x12 grid.
 - The scan display remains accurate after repeated scans in the same session.
+- The navigation console remains a range display even after the ship moves on the galaxy map.
 
 ##### Negative Tests
 
@@ -204,6 +210,7 @@ The repository will contain a galaxy navigation experience that allows a player 
 - The navigation screen does not require tactical system data to load.
 - LRS does not reveal sectors outside the galaxy boundary.
 - Scanning does not reveal or require generated galaxy contents before that feature exists.
+- The navigation console does not draw black void squares for out-of-bounds positions.
 
 #### Story 3: Travel to a Destination
 
@@ -215,8 +222,8 @@ The repository will contain a galaxy navigation experience that allows a player 
 
 - Player selects a valid destination and arrives at the new location.
 - Player sees confirmation that the ship’s position changed.
-- Player clicks a valid destination on the miniature grid to initiate jump selection.
-- Player can select destinations anywhere within the 11x11 jump range when the location is in bounds.
+- Player clicks a range cell on the navigation console to initiate jump selection.
+- Player can select destinations anywhere within the 11x11 jump range, including positions that clamp to the galaxy edge.
 - Player sees the turn count remain visible after movement.
 - Player can end the turn after moving without taking an action.
 
@@ -231,9 +238,9 @@ The repository will contain a galaxy navigation experience that allows a player 
 
 ##### Negative Tests
 
-- Player cannot travel outside the bounds of the galaxy.
+- Player cannot leave the ship outside the bounds of the galaxy.
 - Invalid destinations do not update the saved session state.
-- Clicking outside the galaxy grid does not initiate travel.
+- Clicking a range cell always resolves to a valid warp target inside the galaxy boundary.
 - A second movement in the same turn is not allowed.
 - Movement updates the saved map state so it can be restored later.
 - A turn cannot be committed twice.
@@ -246,23 +253,24 @@ The repository will contain a galaxy navigation experience that allows a player 
 
 ##### Happy Path Tests
 
-- Player can use LRS once during a turn.
+- Player can queue LRS once during a turn.
 - Player can perform one warp jump during the same turn.
 - Player sees that both turn steps are available or consumed as they are used.
 - Player sees the turn count update when the turn advances.
 - Player can advance the turn without using action, movement, or either.
 - Player can end an empty turn and still advance the turn count.
+- Player sees queued LRS resolve before movement when End Turn is pressed.
 
 ##### Edge Case Tests
 
-- Player can use movement before action if the UI permits that order.
+- Player can change the queued action on or off before ending the turn.
 - Turn status stays accurate after a valid action is taken.
 - The turn counter remains accurate after each completed turn.
 - The End Turn button finalizes the turn state.
 
 ##### Negative Tests
 
-- Player cannot use LRS more than once in the same turn.
+- Player cannot queue LRS more than once in the same turn.
 - Player cannot warp jump more than once in the same turn.
 - Player cannot exceed the one-action and one-move turn limit.
 - Player cannot advance the turn counter without a valid turn state update.
@@ -311,7 +319,8 @@ Describe how the feature will be implemented in phases.
 - Add the current-location presentation, fog of war, and scan context display.
 - Establish the client-side interaction model for choosing a destination from the 11x11 navigation console.
 - Add a visible turn counter and turn-status display.
-- Add an End Turn button to commit the current turn.
+- Add an LRS toggle to queue the action.
+- Add an End Turn button to commit the current turn and resolve queued action before movement.
 - Expected outcome: the galaxy map can be viewed as a strategic navigation screen.
 
 ### Phase 2: Travel Flow
@@ -329,6 +338,7 @@ Describe how the feature will be implemented in phases.
 - Persist the turn counter and turn state.
 - Persist the completed-turn state for the End Turn flow.
 - Implement LRS reveal and update logic for the surrounding 3x3 area centered on the ship.
+- Persist queued action state for the current turn until End Turn resolves it.
 - Prevent invalid out-of-bounds travel.
 - Confirm that a resumed session restores the last known galaxy position.
 - Expected outcome: travel and scan state survive reloads and session restoration.
@@ -359,7 +369,8 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Add a destination selection interaction for the navigation console.
 - [ ] Add turn status display for action and movement availability.
 - [ ] Add a turn counter that is always visible in the UI.
-- [ ] Add an End Turn button to commit the current turn.
+- [ ] Add an LRS toggle to queue the action.
+- [ ] Add an End Turn button to commit the current turn and resolve queued action before movement.
 
 #### Tests
 
@@ -371,7 +382,9 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Verify sector scan counts render using `K`, `P`, and `B` markers.
 - [ ] Verify the turn status display shows action and movement availability.
 - [ ] Verify the turn counter is always visible.
+- [ ] Verify the LRS toggle queues action instead of executing it immediately.
 - [ ] Verify the End Turn button advances the turn even when action and movement are skipped.
+- [ ] Verify queued LRS resolves before movement when End Turn is pressed.
 
 ### Phase 2: Travel Flow
 
@@ -382,7 +395,7 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Show an arrival or travel result state after movement completes.
 - [ ] Restrict movement to in-bounds galaxy destinations.
 - [ ] Restrict destination selection to the 11x11 jump range.
-- [ ] Enforce one action and one movement per turn.
+- [ ] Enforce one queued action and one movement per turn.
 - [ ] Restrict the action set to LRS.
 - [ ] Restrict the movement set to warp jump.
 
@@ -394,7 +407,7 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Verify a click outside the galaxy grid does not initiate travel.
 - [ ] Verify a destination outside the 11x11 jump range does not initiate travel.
 - [ ] Verify a second warp jump in the same turn is rejected.
-- [ ] Verify a second LRS in the same turn is rejected.
+- [ ] Verify a second LRS queue in the same turn is rejected.
 
 ### Phase 3: Persistence and Validation
 
@@ -406,6 +419,7 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Initialize all sector counts to `0` until galaxy generation exists.
 - [ ] Reject out-of-bounds destinations.
 - [ ] Implement LRS reveal and update logic for the surrounding 3x3 area centered on the ship.
+- [ ] Persist queued action state for the current turn.
 - [ ] Persist turn state for action and movement usage.
 - [ ] Persist turn completion state for the End Turn flow.
 - [ ] Restore the last known galaxy position when a session resumes.
@@ -421,6 +435,7 @@ Test tasks must be written as individual test cases, not broad statements like "
 - [ ] Verify the 11x11 navigation grid centers on the ship.
 - [ ] Verify sector counts persist after reload.
 - [ ] Verify the turn state prevents more than one action and one movement per turn.
+- [ ] Verify queued action state persists until End Turn resolves it.
 - [ ] Verify the turn counter persists after reload.
 - [ ] Verify ending a turn with no action or movement still increments the turn count.
 

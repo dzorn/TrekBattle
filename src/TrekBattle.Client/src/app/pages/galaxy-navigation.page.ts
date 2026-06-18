@@ -27,6 +27,7 @@ export class GalaxyNavigationPageComponent {
   protected readonly busy = signal(false);
   protected readonly statusMessage = signal<string | null>(null);
   protected readonly selectedDestination = signal<{ x: number; y: number } | null>(null);
+  protected readonly navigationRadius = JumpRange;
 
   protected readonly galaxyRows = Array.from({ length: GalaxyHeight }, (_, index) => index);
   protected readonly galaxyCols = Array.from({ length: GalaxyWidth }, (_, index) => index);
@@ -43,7 +44,6 @@ export class GalaxyNavigationPageComponent {
     this.gameApi.activateGalaxyView(resumeCode).subscribe({
       next: session => {
         this.session.set(session);
-        this.syncSelectionWithSession(session);
         this.loading.set(false);
       },
       error: () => {
@@ -53,32 +53,31 @@ export class GalaxyNavigationPageComponent {
     });
   }
 
-  protected performLongRangeScan(): void {
+  protected toggleLongRangeScan(): void {
     const game = this.session();
 
-    if (!game || this.busy() || game.galaxyMap.actionUsed) {
+    if (!game || this.busy()) {
       return;
     }
 
     this.busy.set(true);
     this.statusMessage.set(null);
 
-    this.gameApi.performLongRangeScan(game.resumeCode).subscribe({
+    this.gameApi.toggleLongRangeScan(game.resumeCode).subscribe({
       next: session => {
         this.session.set(session);
-        this.syncSelectionWithSession(session);
-        this.statusMessage.set('Long range scan updated the map.');
+        this.statusMessage.set(session.galaxyMap.actionUsed ? 'Long range scan queued.' : 'Long range scan cleared.');
         this.busy.set(false);
       },
       error: error => {
         console.error('[TrekBattle] Long range scan failed.', error);
-        this.statusMessage.set('Long range scan failed. Try again.');
+        this.statusMessage.set('Unable to update the action toggle. Try again.');
         this.busy.set(false);
       },
     });
   }
 
-  protected selectWarpDestination(destinationX: number, destinationY: number): void {
+  protected selectWarpDestination(gridX: number, gridY: number): void {
     const game = this.session();
 
     if (!game || this.busy()) {
@@ -86,30 +85,49 @@ export class GalaxyNavigationPageComponent {
     }
 
     const selected = this.selectedDestination();
-    const current = this.map;
 
-    if (
-      !this.canWarpTo(destinationX, destinationY) &&
-      !this.isCurrentSector(destinationX, destinationY) &&
-      !this.isSelectedDestination(destinationX, destinationY)
-    ) {
-      return;
-    }
-
-    if (selected && selected.x === destinationX && selected.y === destinationY) {
+    if (selected && selected.x === gridX && selected.y === gridY) {
       this.selectedDestination.set(null);
       this.statusMessage.set('Movement destination cleared.');
       return;
     }
 
-    if (current && current.currentX === destinationX && current.currentY === destinationY) {
+    if (this.isNavigationCenter(gridX, gridY)) {
       this.selectedDestination.set(null);
       this.statusMessage.set('Movement destination cleared.');
       return;
     }
 
-    this.selectedDestination.set({ x: destinationX, y: destinationY });
-    this.statusMessage.set(`Movement destination selected at ${this.locationLabel(destinationX, destinationY)}.`);
+    const offsetX = gridX - JumpRange;
+    const offsetY = gridY - JumpRange;
+    const destinationX = game.galaxyMap.currentX + offsetX;
+    const destinationY = game.galaxyMap.currentY + offsetY;
+
+    if (game.galaxyMap.movementUsed) {
+      this.selectedDestination.set({ x: gridX, y: gridY });
+      this.statusMessage.set(`Movement destination selected at range ${offsetX},${offsetY}.`);
+      return;
+    }
+
+    this.busy.set(true);
+    this.statusMessage.set(null);
+
+    this.gameApi.warpJump(game.resumeCode, {
+      destinationX,
+      destinationY,
+    }).subscribe({
+      next: session => {
+        this.session.set(session);
+        this.selectedDestination.set({ x: gridX, y: gridY });
+        this.statusMessage.set(`Warp jump complete at ${this.locationLabel(session.galaxyMap.currentX, session.galaxyMap.currentY)}.`);
+        this.busy.set(false);
+      },
+      error: error => {
+        console.error('[TrekBattle] Warp jump failed.', error);
+        this.statusMessage.set('Warp jump failed. Check the destination and try again.');
+        this.busy.set(false);
+      },
+    });
   }
 
   protected endTurn(): void {
@@ -122,47 +140,24 @@ export class GalaxyNavigationPageComponent {
     this.busy.set(true);
     this.statusMessage.set(null);
 
-    const selectedDestination = this.selectedDestination();
-    const finishTurn = () => {
-      this.gameApi.endTurn(game.resumeCode).subscribe({
-        next: session => {
-          this.session.set(session);
-          this.syncSelectionWithSession(session);
-          this.statusMessage.set(`Turn ${session.galaxyMap.completedTurns} completed.`);
-          this.busy.set(false);
-        },
-        error: error => {
-          console.error('[TrekBattle] End turn failed.', error);
-          this.statusMessage.set('End turn failed. The ship computer did not commit the turn.');
-          this.busy.set(false);
-        },
-      });
-    };
+    const hadQueuedAction = game.galaxyMap.actionUsed;
 
-    if (!selectedDestination) {
-      finishTurn();
-      return;
-    }
-
-    if (game.galaxyMap.movementUsed) {
-      this.statusMessage.set('Movement has already been used this turn.');
-      this.busy.set(false);
-      return;
-    }
-
-    this.gameApi.warpJump(game.resumeCode, {
-      destinationX: selectedDestination.x,
-      destinationY: selectedDestination.y,
-    }).subscribe({
+    this.gameApi.endTurn(game.resumeCode).subscribe({
       next: session => {
         this.session.set(session);
-        this.syncSelectionWithSession(session);
-        this.statusMessage.set(`Warp jump complete. Arrived at ${this.locationLabel(session.galaxyMap.currentX, session.galaxyMap.currentY)}.`);
-        finishTurn();
+        this.selectedDestination.set(null);
+
+        if (hadQueuedAction) {
+          this.statusMessage.set(`Long range scan resolved. Turn ${session.galaxyMap.completedTurns} completed.`);
+        } else {
+          this.statusMessage.set(`Turn ${session.galaxyMap.completedTurns} completed.`);
+        }
+
+        this.busy.set(false);
       },
       error: error => {
-        console.error('[TrekBattle] Warp jump failed.', error);
-        this.statusMessage.set('Warp jump failed. Check the destination and try again.');
+        console.error('[TrekBattle] End turn failed.', error);
+        this.statusMessage.set('End turn failed. Check the selected destination and try again.');
         this.busy.set(false);
       },
     });
@@ -190,12 +185,12 @@ export class GalaxyNavigationPageComponent {
     return this.getSector(map.currentX, map.currentY);
   }
 
-  protected get actionReady(): boolean {
-    return !(this.map?.actionUsed ?? true);
+  protected get actionQueued(): boolean {
+    return this.map?.actionUsed ?? false;
   }
 
-  protected get movementReady(): boolean {
-    return !(this.map?.movementUsed ?? true);
+  protected get movementQueued(): boolean {
+    return this.selectedDestination() !== null;
   }
 
   protected get turnCounter(): number {
@@ -208,50 +203,19 @@ export class GalaxyNavigationPageComponent {
     return map ? this.locationLabel(map.currentX, map.currentY) : 'Unknown';
   }
 
-  protected get navigationGrid(): Array<Array<{ x: number; y: number; inBounds: boolean }>> {
-    const map = this.map;
-
-    if (!map) {
-      return [];
-    }
-
-    return this.navigationOffsets.map(offsetY =>
-      this.navigationOffsets.map(offsetX => {
-        const x = map.currentX + offsetX;
-        const y = map.currentY + offsetY;
-
-        return {
-          x,
-          y,
-          inBounds: this.isInBounds(x, y),
-        };
-      })
+  protected get navigationGrid(): Array<Array<{ x: number; y: number; offsetX: number; offsetY: number }>> {
+    return this.navigationOffsets.map((offsetY, rowIndex) =>
+      this.navigationOffsets.map((offsetX, columnIndex) => ({
+        x: columnIndex,
+        y: rowIndex,
+        offsetX,
+        offsetY,
+      }))
     );
   }
 
   protected getGalaxySector(x: number, y: number): GalaxySectorState | null {
     return this.getSector(x, y);
-  }
-
-  protected canWarpTo(x: number, y: number): boolean {
-    const map = this.map;
-
-    if (!map) {
-      return false;
-    }
-
-    if (!this.isInBounds(x, y)) {
-      return false;
-    }
-
-    const deltaX = Math.abs(x - map.currentX);
-    const deltaY = Math.abs(y - map.currentY);
-
-    return Math.max(deltaX, deltaY) <= map.jumpRange && !(x === map.currentX && y === map.currentY);
-  }
-
-  protected canSelectMovementCell(x: number, y: number): boolean {
-    return this.isCurrentSector(x, y) || this.isSelectedDestination(x, y) || this.canWarpTo(x, y);
   }
 
   protected isCurrentSector(x: number, y: number): boolean {
@@ -264,23 +228,15 @@ export class GalaxyNavigationPageComponent {
       return 'Uncharted';
     }
 
-    if (!sector.visited) {
-      return 'Fog';
-    }
-
     return `K${sector.enemyCount} P${sector.planetCount} B${sector.baseCount}`;
   }
 
-  protected sectorSubtitle(sector: GalaxySectorState | null): string {
+  protected sectorHasScanInfo(sector: GalaxySectorState | null): boolean {
     if (!sector) {
-      return 'Outside boundary';
+      return false;
     }
 
-    if (!sector.visited) {
-      return 'No scan data';
-    }
-
-    return `Sector ${this.locationLabel(sector.x, sector.y)}`;
+    return sector.visited || sector.scanned || sector.enemyCount !== 0 || sector.planetCount !== 0 || sector.baseCount !== 0;
   }
 
   private getSector(x: number, y: number): GalaxySectorState | null {
@@ -293,12 +249,12 @@ export class GalaxyNavigationPageComponent {
     return map.sectors.find(sector => sector.x === x && sector.y === y) ?? null;
   }
 
-  private isInBounds(x: number, y: number): boolean {
-    return x >= 0 && x < GalaxyWidth && y >= 0 && y < GalaxyHeight;
-  }
-
   private locationLabel(x: number, y: number): string {
     return `${x + 1},${y + 1}`;
+  }
+
+  protected isNavigationCenter(x: number, y: number): boolean {
+    return x === JumpRange && y === JumpRange;
   }
 
   protected isSelectedDestination(x: number, y: number): boolean {
@@ -306,32 +262,4 @@ export class GalaxyNavigationPageComponent {
     return selected ? selected.x === x && selected.y === y : false;
   }
 
-  protected movementTileState(x: number, y: number): 'current' | 'selected' | 'available' | 'unselected' {
-    if (this.isCurrentSector(x, y)) {
-      return 'current';
-    }
-
-    if (this.isSelectedDestination(x, y)) {
-      return 'selected';
-    }
-
-    return this.canWarpTo(x, y) ? 'available' : 'unselected';
-  }
-
-  private syncSelectionWithSession(session: GameSessionState): void {
-    const selected = this.selectedDestination();
-
-    if (!selected) {
-      return;
-    }
-
-    if (session.galaxyMap.movementUsed) {
-      this.selectedDestination.set(null);
-      return;
-    }
-
-    if (session.galaxyMap.currentX === selected.x && session.galaxyMap.currentY === selected.y) {
-      this.selectedDestination.set(null);
-    }
-  }
 }

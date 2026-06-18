@@ -16,7 +16,7 @@
 
 .app-banner {
   display: grid;
-  gap: 0.75rem;
+  place-items: center;
   max-width: 72rem;
   margin: 0 auto 2rem;
   padding: 1.5rem 1.75rem;
@@ -27,25 +27,15 @@
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
 }
 
-.eyebrow {
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.24em;
-  font-size: 0.75rem;
-  color: #8cb8ff;
-}
-
 h1 {
-  margin: 0.25rem 0 0;
-  font-size: clamp(2rem, 4vw, 3.6rem);
-  line-height: 1.02;
-}
-
-.lede {
-  max-width: 60ch;
-  margin: 0.5rem 0 0;
-  color: rgba(244, 247, 251, 0.8);
-  font-size: 1.05rem;
+  margin: 0;
+  font-size: clamp(1.55rem, 2.35vw, 2.2rem);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+  color: #8cb8ff;
 }
 
 .app-content {

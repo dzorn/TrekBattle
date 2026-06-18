@@ -12,7 +12,8 @@ public sealed record GalaxySectorState(
     int EnemyCount,
     int PlanetCount,
     int BaseCount,
-    bool Visited);
+    bool Visited,
+    bool Scanned);
 
 public sealed record GalaxyMapState(
     int Width,

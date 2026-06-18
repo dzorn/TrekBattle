@@ -167,11 +167,11 @@ sessions.MapPost("/{resumeCode}/lrs", async (
     ILogger<Program> requestLogger,
     CancellationToken cancellationToken) =>
 {
-    requestLogger.LogInformation("Executing LRS for recovery code {ResumeCode}.", resumeCode);
+    requestLogger.LogInformation("Toggling LRS for recovery code {ResumeCode}.", resumeCode);
 
     return await ExecuteSessionAction(async () =>
     {
-        var updated = await sessionService.PerformLongRangeScanAsync(resumeCode, cancellationToken);
+        var updated = await sessionService.ToggleLongRangeScanAsync(resumeCode, cancellationToken);
         return updated is null
             ? Results.NotFound(new ProblemDetails
             {
@@ -179,7 +179,7 @@ sessions.MapPost("/{resumeCode}/lrs", async (
                 Detail = $"No saved session exists for resume code '{resumeCode}'."
             })
             : Results.Ok(updated);
-    }, requestLogger, "perform a long range scan");
+    }, requestLogger, "toggle the long range scan");
 });
 
 sessions.MapPost("/{resumeCode}/warp", async (

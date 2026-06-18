@@ -125,7 +125,7 @@ public sealed class GameSessionService
             cancellationToken);
     }
 
-    public Task<GameSessionState?> PerformLongRangeScanAsync(string resumeCode, CancellationToken cancellationToken)
+    public Task<GameSessionState?> ToggleLongRangeScanAsync(string resumeCode, CancellationToken cancellationToken)
     {
         return UpdateSessionAsync(
             resumeCode,
@@ -133,31 +133,12 @@ public sealed class GameSessionService
             {
                 var galaxyMap = EnsureGalaxyMap(state.GalaxyMap);
 
-                if (galaxyMap.ActionUsed)
-                {
-                    throw new ArgumentException("Long range scan has already been used this turn.", nameof(resumeCode));
-                }
-
-                var updatedSectors = galaxyMap.Sectors
-                    .Select(sector =>
-                    {
-                        var isVisible = Math.Abs(sector.X - galaxyMap.CurrentX) <= 1
-                            && Math.Abs(sector.Y - galaxyMap.CurrentY) <= 1
-                            && IsWithinBounds(sector.X, sector.Y);
-
-                        return isVisible
-                            ? sector with { Visited = true }
-                            : sector;
-                    })
-                    .ToArray();
-
                 return state with
                 {
                     CurrentScreen = "Galaxy",
                     GalaxyMap = galaxyMap with
                     {
-                        ActionUsed = true,
-                        Sectors = updatedSectors
+                        ActionUsed = !galaxyMap.ActionUsed
                     }
                 };
             },
@@ -180,26 +161,26 @@ public sealed class GameSessionService
                     throw new ArgumentException("Warp jump has already been used this turn.", nameof(resumeCode));
                 }
 
-                if (!IsWithinBounds(request.DestinationX, request.DestinationY))
-                {
-                    throw new ArgumentException("Destination is outside the galaxy boundary.", nameof(request));
-                }
+                var destinationX = ClampToGalaxy(request.DestinationX, GalaxyWidth);
+                var destinationY = ClampToGalaxy(request.DestinationY, GalaxyHeight);
 
-                if (request.DestinationX == galaxyMap.CurrentX && request.DestinationY == galaxyMap.CurrentY)
+                if (
+                    request.DestinationX == galaxyMap.CurrentX &&
+                    request.DestinationY == galaxyMap.CurrentY)
                 {
                     throw new ArgumentException("Destination must be different from the current location.", nameof(request));
                 }
 
-                var deltaX = Math.Abs(request.DestinationX - galaxyMap.CurrentX);
-                var deltaY = Math.Abs(request.DestinationY - galaxyMap.CurrentY);
+                var deltaX = Math.Abs(destinationX - galaxyMap.CurrentX);
+                var deltaY = Math.Abs(destinationY - galaxyMap.CurrentY);
                 if (Math.Max(deltaX, deltaY) > galaxyMap.JumpRange)
                 {
                     throw new ArgumentException("Destination is outside the warp range.", nameof(request));
                 }
 
                 var updatedSectors = galaxyMap.Sectors
-                    .Select(sector => sector.X == request.DestinationX && sector.Y == request.DestinationY
-                        ? sector with { Visited = true }
+                    .Select(sector => sector.X == destinationX && sector.Y == destinationY
+                        ? sector with { Visited = true, Scanned = true }
                         : sector)
                     .ToArray();
 
@@ -208,8 +189,8 @@ public sealed class GameSessionService
                     CurrentScreen = "Galaxy",
                     GalaxyMap = galaxyMap with
                     {
-                        CurrentX = request.DestinationX,
-                        CurrentY = request.DestinationY,
+                        CurrentX = destinationX,
+                        CurrentY = destinationY,
                         MovementUsed = true,
                         Sectors = updatedSectors
                     }
@@ -225,11 +206,17 @@ public sealed class GameSessionService
             state =>
             {
                 var galaxyMap = EnsureGalaxyMap(state.GalaxyMap);
+                var updatedMap = galaxyMap;
+
+                if (galaxyMap.ActionUsed)
+                {
+                    updatedMap = ApplyLongRangeScan(updatedMap);
+                }
 
                 return state with
                 {
                     CurrentScreen = "Galaxy",
-                    GalaxyMap = galaxyMap with
+                    GalaxyMap = updatedMap with
                     {
                         CompletedTurns = galaxyMap.CompletedTurns + 1,
                         ActionUsed = false,
@@ -238,6 +225,44 @@ public sealed class GameSessionService
                 };
             },
             cancellationToken);
+    }
+
+    private static GalaxyMapState ApplyLongRangeScan(GalaxyMapState galaxyMap)
+    {
+        var updatedSectors = galaxyMap.Sectors
+            .Select(sector =>
+            {
+                var isVisible = Math.Abs(sector.X - galaxyMap.CurrentX) <= 1
+                    && Math.Abs(sector.Y - galaxyMap.CurrentY) <= 1
+                    && IsWithinBounds(sector.X, sector.Y);
+
+                return isVisible
+                    ? sector with { Scanned = true }
+                    : sector;
+            })
+            .ToArray();
+
+        return galaxyMap with
+        {
+            Sectors = updatedSectors
+        };
+    }
+
+    private static GalaxyMapState ApplyWarpJump(GalaxyMapState galaxyMap, int destinationX, int destinationY)
+    {
+        var updatedSectors = galaxyMap.Sectors
+            .Select(sector => sector.X == destinationX && sector.Y == destinationY
+                ? sector with { Visited = true, Scanned = true }
+                : sector)
+            .ToArray();
+
+        return galaxyMap with
+        {
+            CurrentX = destinationX,
+            CurrentY = destinationY,
+            MovementUsed = true,
+            Sectors = updatedSectors
+        };
     }
 
     private async Task<GameSessionState?> UpdateSessionAsync(
@@ -287,7 +312,8 @@ public sealed class GameSessionService
                     EnemyCount: 0,
                     PlanetCount: 0,
                     BaseCount: 0,
-                    Visited: x == currentX && y == currentY));
+                    Visited: x == currentX && y == currentY,
+                    Scanned: x == currentX && y == currentY));
             }
         }
 
@@ -345,6 +371,11 @@ public sealed class GameSessionService
     private static bool IsWithinBounds(int x, int y)
     {
         return x >= 0 && x < GalaxyWidth && y >= 0 && y < GalaxyHeight;
+    }
+
+    private static int ClampToGalaxy(int value, int upperExclusive)
+    {
+        return Math.Clamp(value, 0, upperExclusive - 1);
     }
 
     private static string NormalizeRequiredValue(string? value, string parameterName)

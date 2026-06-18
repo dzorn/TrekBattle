@@ -8,17 +8,17 @@ export const routes: Routes = [
   {
     path: '',
     component: GameSetupPageComponent,
-    title: 'TrekBattle | Game Startup',
+    title: 'Galaxy Battle | Game Startup',
   },
   {
     path: 'launch/:resumeCode',
     component: GameLaunchPageComponent,
-    title: 'TrekBattle | Launch',
+    title: 'Galaxy Battle | Launch',
   },
   {
     path: 'galaxy/:resumeCode',
     component: GalaxyNavigationPageComponent,
-    title: 'TrekBattle | Galaxy',
+    title: 'Galaxy Battle | Galaxy',
   },
   {
     path: '**',

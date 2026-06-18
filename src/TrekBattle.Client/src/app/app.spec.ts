@@ -14,10 +14,10 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render the TrekBattle banner', async () => {
+  it('should render the Galaxy Battle banner', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Starship command');
+    expect(compiled.querySelector('h1')?.textContent).toContain('GALAXY BATTLE');
   });
 });

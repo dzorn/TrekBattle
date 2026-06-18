@@ -19,9 +19,7 @@
       <div class="panel-head">
         <div>
           <p class="section-label">Galaxy Map</p>
-          <h3>Fog clears as you visit sectors.</h3>
         </div>
-        <span class="legend-chip">12x12 grid</span>
       </div>
 
       <div class="sector-board">
@@ -32,26 +30,16 @@
               class="sector-tile"
               [class.current]="isCurrentSector(x, y)"
               [class.visited]="sector?.visited"
+              [class.scanned]="sector?.scanned && !sector?.visited"
               [class.fog]="!sector?.visited"
               [attr.data-testid]="'galaxy-cell-' + x + '-' + y"
             >
               <span class="tile-coord">{{ x + 1 }},{{ y + 1 }}</span>
-              <strong>
-                @if (isCurrentSector(x, y)) {
-                  SHIP
-                } @else if (sector?.visited) {
-                  {{ sectorTitle(sector) }}
-                } @else {
-                  Fog
-                }
-              </strong>
-              <small>
-                @if (sector?.visited) {
-                  {{ sectorSubtitle(sector) }}
-                } @else {
-                  Unvisited
-                }
-              </small>
+              @if (isCurrentSector(x, y)) {
+                <strong>SHIP</strong>
+              } @else if (sectorHasScanInfo(sector)) {
+                <strong>{{ sectorTitle(sector) }}</strong>
+              }
             </div>
           }
         }
@@ -79,11 +67,21 @@
         </div>
         <div>
           <span>Action</span>
-          <strong>{{ actionReady ? 'LRS ready' : 'LRS used' }}</strong>
+          <button
+            type="button"
+            class="action-toggle"
+            [class.selected]="actionQueued"
+            [class.unselected]="!actionQueued"
+            [disabled]="busy()"
+            (click)="toggleLongRangeScan()"
+            aria-label="Toggle Long Range Scan"
+          >
+            {{ actionQueued ? 'LRS ON' : 'LRS OFF' }}
+          </button>
         </div>
         <div>
           <span>Movement</span>
-          <strong>{{ movementReady ? 'Warp ready' : 'Warp used' }}</strong>
+          <strong data-testid="movement-status">{{ movementQueued ? 'Warp queued' : 'Warp ready' }}</strong>
         </div>
         <div>
           <span>Screen</span>
@@ -92,9 +90,6 @@
       </div>
 
       <div class="command-actions">
-        <button type="button" (click)="performLongRangeScan()" [disabled]="busy() || !actionReady">
-          Long Range Scan
-        </button>
         <button type="button" class="secondary" (click)="endTurn()" [disabled]="busy()">
           End Turn
         </button>
@@ -105,38 +100,32 @@
         <div class="panel-head">
           <div>
             <p class="section-label">Navigation Console</p>
-            <h3>Jump range 5, centered on the ship.</h3>
+            <h3>Jump range {{ navigationRadius }}, range surface centered on the ship.</h3>
           </div>
-          <span class="legend-chip">11x11 grid</span>
+          <span class="legend-chip">11x11 range grid</span>
         </div>
 
         <div class="navigation-board">
           @for (row of navigationGrid; track $index) {
             @for (cell of row; track cell.x + '-' + cell.y) {
-              @if (cell.inBounds) {
-                <button
-                  type="button"
-                  class="nav-tile"
-                  [class.current]="movementTileState(cell.x, cell.y) === 'current'"
-                  [class.selected]="movementTileState(cell.x, cell.y) === 'selected'"
-                  [class.available]="movementTileState(cell.x, cell.y) === 'available'"
-                  [class.unselected]="movementTileState(cell.x, cell.y) === 'unselected'"
-                  [disabled]="busy() || !canSelectMovementCell(cell.x, cell.y)"
-                  [attr.aria-label]="'Select warp destination ' + (cell.x + 1) + ',' + (cell.y + 1)"
-                  [attr.data-testid]="'nav-cell-' + cell.x + '-' + cell.y"
-                  (click)="selectWarpDestination(cell.x, cell.y)"
-                >
-                  <span class="sr-only">{{ cell.x + 1 }},{{ cell.y + 1 }}</span>
-                </button>
-              } @else {
-                <div class="nav-void" aria-hidden="true"></div>
-              }
+              <button
+                type="button"
+                class="nav-tile"
+                [class.current]="isNavigationCenter(cell.x, cell.y)"
+                [class.selected]="isSelectedDestination(cell.x, cell.y)"
+                [disabled]="busy()"
+                [attr.aria-label]="'Select warp offset ' + (cell.x - navigationRadius) + ',' + (cell.y - navigationRadius)"
+                [attr.data-testid]="'nav-cell-' + cell.x + '-' + cell.y"
+                (click)="selectWarpDestination(cell.x, cell.y)"
+              >
+                <span class="sr-only">{{ cell.x - navigationRadius }},{{ cell.y - navigationRadius }}</span>
+              </button>
             }
           }
         </div>
 
         <p class="subtle console-note">
-          Click a valid destination to select a warp target. Click the ship square or the selected square again to clear movement. The galaxy edge is a hard boundary.
+          Click any range cell to select a warp target. Click the ship square or the selected square again to clear movement. Warp jumps that run past the galaxy edge stop at the edge.
         </p>
       </article>
     </article>

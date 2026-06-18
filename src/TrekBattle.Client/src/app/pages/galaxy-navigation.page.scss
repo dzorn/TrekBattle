@@ -90,6 +90,22 @@
   margin-top: 0.35rem;
 }
 
+.action-toggle {
+  width: 100%;
+  min-height: 2.2rem;
+  padding: 0.2rem 0.75rem;
+  border: 1px solid rgba(177, 196, 255, 0.18);
+  border-radius: 0.85rem;
+  background: transparent;
+  color: rgba(244, 247, 251, 0.68);
+}
+
+.action-toggle.selected {
+  background: #26a845;
+  border-color: #1d7f33;
+  color: #ffffff;
+}
+
 .command-actions {
   display: flex;
   flex-wrap: wrap;
@@ -123,11 +139,20 @@ button:disabled {
   cursor: progress;
 }
 
-.sector-board,
+.sector-board {
+  display: grid;
+  gap: 0.2rem;
+  margin: 1rem auto 0;
+  width: min(100%, 36rem);
+  grid-auto-rows: 1fr;
+}
+
 .navigation-board {
   display: grid;
-  gap: 0.35rem;
-  margin-top: 1rem;
+  gap: 0.12rem;
+  margin: 1rem auto 0;
+  width: min(100%, 18rem);
+  grid-auto-rows: 1fr;
 }
 
 .sector-board {
@@ -139,16 +164,16 @@ button:disabled {
 }
 
 .sector-tile,
-.nav-tile,
-.nav-void {
-  min-height: 5.25rem;
-  padding: 0.55rem;
+.nav-tile {
+  min-height: 0;
+  padding: 0.15rem;
   border-radius: 0.9rem;
 }
 
 .sector-tile,
 .nav-tile {
   display: grid;
+  aspect-ratio: 1;
   gap: 0.25rem;
   border: 1px solid rgba(177, 196, 255, 0.16);
   background: rgba(2, 7, 19, 0.76);
@@ -156,11 +181,20 @@ button:disabled {
   text-align: left;
 }
 
+.sector-tile {
+  position: relative;
+  place-items: center;
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+}
+
 .sector-tile.fog,
 .nav-tile.fog {
-  border-style: dashed;
-  background: rgba(2, 7, 19, 0.5);
-  color: rgba(244, 247, 251, 0.62);
+  border-style: solid;
+  background: rgba(216, 219, 226, 0.18);
+  border-color: rgba(216, 219, 226, 0.2);
+  color: rgba(216, 219, 226, 0.72);
 }
 
 .sector-tile.visited,
@@ -170,28 +204,27 @@ button:disabled {
 
 .sector-tile.current,
 .nav-tile.current {
-  background: linear-gradient(135deg, rgba(86, 164, 255, 0.22), rgba(30, 233, 163, 0.14));
-  border-color: rgba(122, 246, 199, 0.38);
+  background: #26a845;
+  border-color: #1d7f33;
+  color: #ffffff;
 }
 
 .sector-tile strong,
 .nav-tile strong {
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   line-height: 1;
 }
 
 .sector-tile small,
 .nav-tile small {
+  font-size: 0.68rem;
   color: rgba(244, 247, 251, 0.72);
 }
 
-.nav-void {
-  border: 1px solid rgba(177, 196, 255, 0.07);
-  background: rgba(2, 7, 19, 0.18);
-}
-
-.navigation-board {
-  gap: 0.2rem;
+.tile-coord {
+  position: absolute;
+  top: 0.45rem;
+  left: 0.5rem;
 }
 
 .nav-tile {
@@ -207,34 +240,25 @@ button:disabled {
   box-shadow: none;
 }
 
+.nav-tile.available,
+.nav-tile.unselected,
+.nav-tile:disabled {
+  background: #d8dbe2;
+  border-color: #bcc4d3;
+  color: #1b2233;
+  opacity: 1;
+}
+
 .nav-tile.current {
   background: #26a845;
   color: #ffffff;
   border-color: #1d7f33;
 }
 
-.nav-tile.current .tile-coord,
-.nav-tile.current small {
-  color: rgba(255, 255, 255, 0.82);
-}
-
 .nav-tile.selected {
   background: #d82f2f;
   color: #ffffff;
   border-color: #a81f1f;
-}
-
-.nav-tile.selected .tile-coord,
-.nav-tile.selected small {
-  color: rgba(255, 255, 255, 0.82);
-}
-
-.nav-tile.available {
-  cursor: pointer;
-}
-
-.nav-tile.unselected {
-  opacity: 0.96;
 }
 
 .nav-tile:focus-visible {
@@ -273,18 +297,13 @@ button:disabled {
   }
 
   .sector-tile,
-  .nav-tile,
-  .nav-void {
-    min-height: 4.5rem;
+  .nav-tile {
+    min-height: 0;
     padding: 0.45rem;
   }
 
   .navigation-board {
     gap: 0.25rem;
-  }
-
-  .nav-tile {
-    min-height: 0;
   }
 }
 

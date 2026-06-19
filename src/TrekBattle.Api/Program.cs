@@ -190,7 +190,7 @@ sessions.MapPost("/{resumeCode}/warp", async (
     CancellationToken cancellationToken) =>
 {
     requestLogger.LogInformation(
-        "Executing warp jump for recovery code {ResumeCode} to {DestinationX},{DestinationY}.",
+        "Queueing warp destination for recovery code {ResumeCode} to {DestinationX},{DestinationY}.",
         resumeCode,
         request.DestinationX,
         request.DestinationY);

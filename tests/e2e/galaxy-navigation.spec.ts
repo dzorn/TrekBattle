@@ -48,28 +48,28 @@ test('player can scan, select movement, and end a turn in the galaxy view', asyn
   }
 
   const currentLocation = parseLocation(currentLocationText);
-  const scanTarget = currentLocation.x < 11 ? { x: currentLocation.x + 1, y: currentLocation.y } : { x: currentLocation.x - 1, y: currentLocation.y };
+  const scanTarget = currentLocation.y < 11 ? { x: currentLocation.x, y: currentLocation.y + 1 } : { x: currentLocation.x, y: currentLocation.y - 1 };
   const navigationSelection = chooseNavigationCell(currentLocation.x, currentLocation.y);
 
-  await expect(page.getByTestId(`galaxy-cell-${scanTarget.x}-${scanTarget.y}`)).toContainText('Fog');
+  await expect(page.getByTestId(`galaxy-cell-${scanTarget.x}-${scanTarget.y}`)).toHaveClass(/fog/);
   await page.getByRole('button', { name: 'Toggle Long Range Scan' }).click();
-  await expect(page.getByRole('button', { name: 'Toggle Long Range Scan' })).toContainText('LRS ON');
-  await expect(page.getByTestId(`galaxy-cell-${scanTarget.x}-${scanTarget.y}`)).toContainText('Fog');
+  await expect(page.getByRole('button', { name: 'Toggle Long Range Scan' })).toHaveClass(/selected/);
+  await expect(page.getByTestId(`galaxy-cell-${scanTarget.x}-${scanTarget.y}`)).toHaveClass(/fog/);
   await expect(page.getByTestId('turn-counter')).toHaveText('0');
 
   const selectedNavCell = page.getByTestId(`nav-cell-${navigationSelection.x}-${navigationSelection.y}`);
 
   await selectedNavCell.click();
-  await expect(page.getByTestId('current-location')).toHaveText(`${navigationSelection.destinationX + 1},${navigationSelection.destinationY + 1}`);
+  await expect(page.getByTestId('current-location')).toHaveText(currentLocationText);
   await expect(selectedNavCell).toHaveClass(/selected/);
   await expect(page.getByTestId('turn-counter')).toHaveText('0');
 
   await page.getByRole('button', { name: 'End Turn' }).click();
   await expect(page.getByTestId('turn-counter')).toHaveText('1');
-  await expect(page.getByRole('button', { name: 'Toggle Long Range Scan' })).toContainText('LRS OFF');
-  await expect(page.getByTestId(`galaxy-cell-${scanTarget.x}-${scanTarget.y}`)).not.toContainText('Fog');
-  await expect(page.getByTestId('movement-status')).toHaveText('Warp ready');
-
+  await expect(page.getByRole('button', { name: 'Toggle Long Range Scan' })).toHaveClass(/unselected/);
+  await expect(page.getByTestId(`galaxy-cell-${scanTarget.x}-${scanTarget.y}`)).toHaveClass(/fog/);
+  await expect(page.getByTestId(`galaxy-cell-${scanTarget.x}-${scanTarget.y}`)).toContainText('K0 P0 B0');
+  await expect(page.getByTestId('current-location')).toHaveText(`${navigationSelection.destinationX + 1},${navigationSelection.destinationY + 1}`);
   const updatedLocationText = await page.getByTestId('current-location').textContent();
   if (!updatedLocationText) {
     throw new Error('Updated location was not displayed after warp.');

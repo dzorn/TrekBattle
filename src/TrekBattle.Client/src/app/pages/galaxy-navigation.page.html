@@ -6,13 +6,6 @@
   </section>
 }
 
-@if (statusMessage(); as message) {
-  <section class="panel status-panel notice">
-    <p class="section-label">Flight Computer</p>
-    <p>{{ message }}</p>
-  </section>
-}
-
 @if (session(); as game) {
   <section class="galaxy-layout">
     <article class="panel map-panel">
@@ -48,86 +41,80 @@
 
     <article class="panel command-panel">
       <div class="command-header">
-        <div>
-          <p class="section-label">Galaxy Command</p>
-          <h2>{{ game.playerName }} aboard {{ game.shipName }}</h2>
-          <p class="subtle">Resume code {{ game.resumeCode }} is controlling this live session.</p>
-        </div>
-
-        <div class="turn-card">
-          <span>Turns Taken</span>
-          <strong data-testid="turn-counter">{{ turnCounter }}</strong>
-        </div>
-      </div>
-
-      <div class="command-grid">
-        <div>
-          <span>Location</span>
-          <strong data-testid="current-location">{{ currentLocationText }}</strong>
-        </div>
-        <div>
-          <span>Action</span>
-          <button
-            type="button"
-            class="action-toggle"
-            [class.selected]="actionQueued"
-            [class.unselected]="!actionQueued"
-            [disabled]="busy()"
-            (click)="toggleLongRangeScan()"
-            aria-label="Toggle Long Range Scan"
-          >
-            {{ actionQueued ? 'LRS ON' : 'LRS OFF' }}
-          </button>
-        </div>
-        <div>
-          <span>Movement</span>
-          <strong data-testid="movement-status">{{ movementQueued ? 'Warp queued' : 'Warp ready' }}</strong>
-        </div>
-        <div>
-          <span>Screen</span>
-          <strong>{{ game.currentScreen }}</strong>
-        </div>
-      </div>
-
-      <div class="command-actions">
-        <button type="button" class="secondary" (click)="endTurn()" [disabled]="busy()">
-          End Turn
-        </button>
-      </div>
-
-      <a [routerLink]="['/launch', game.resumeCode]">Back to launch</a>
-      <article class="panel nav-panel">
-        <div class="panel-head">
-          <div>
-            <p class="section-label">Navigation Console</p>
-            <h3>Jump range {{ navigationRadius }}, range surface centered on the ship.</h3>
+        <div class="identity-card">
+          <div class="officer-card">
+            <span>Officer</span>
+            <strong>Commander {{ game.playerName }} of the {{ game.shipName }}</strong>
           </div>
-          <span class="legend-chip">11x11 range grid</span>
-        </div>
 
-        <div class="navigation-board">
-          @for (row of navigationGrid; track $index) {
-            @for (cell of row; track cell.x + '-' + cell.y) {
+          <div class="turn-card">
+            <span>Turns Taken</span>
+            <strong data-testid="turn-counter">{{ turnCounter }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="command-shell-head">
+        <p class="section-label">Navigation Console</p>
+      </div>
+
+      <div class="command-body">
+        <div class="command-column">
+          <div class="command-grid">
+            <div>
+              <span>Location</span>
+              <strong data-testid="current-location">{{ currentLocationText }}</strong>
+            </div>
+            <div class="action-box">
+              <span>Action</span>
+              <div class="action-label-chip">
+                <strong class="action-label">Long Range Scan (LRS)</strong>
+              </div>
               <button
                 type="button"
-                class="nav-tile"
-                [class.current]="isNavigationCenter(cell.x, cell.y)"
-                [class.selected]="isSelectedDestination(cell.x, cell.y)"
+                class="action-toggle"
+                [class.selected]="actionQueued"
+                [class.unselected]="!actionQueued"
                 [disabled]="busy()"
-                [attr.aria-label]="'Select warp offset ' + (cell.x - navigationRadius) + ',' + (cell.y - navigationRadius)"
-                [attr.data-testid]="'nav-cell-' + cell.x + '-' + cell.y"
-                (click)="selectWarpDestination(cell.x, cell.y)"
-              >
-                <span class="sr-only">{{ cell.x - navigationRadius }},{{ cell.y - navigationRadius }}</span>
-              </button>
-            }
-          }
+                (click)="toggleLongRangeScan()"
+                aria-label="Toggle Long Range Scan"
+                [attr.aria-pressed]="actionQueued"
+              ></button>
+            </div>
+          </div>
+
+          <div class="command-actions">
+            <button type="button" class="secondary" (click)="endTurn()" [disabled]="busy()">
+              End Turn
+            </button>
+          </div>
         </div>
 
-        <p class="subtle console-note">
-          Click any range cell to select a warp target. Click the ship square or the selected square again to clear movement. Warp jumps that run past the galaxy edge stop at the edge.
-        </p>
-      </article>
+        <article class="panel nav-panel">
+          <div class="navigation-board">
+            @for (row of navigationGrid; track $index) {
+              @for (cell of row; track cell.x + '-' + cell.y) {
+                <button
+                  type="button"
+                  class="nav-tile"
+                  [class.current]="isNavigationCenter(cell.x, cell.y)"
+                  [class.selected]="isSelectedDestination(cell.x, cell.y)"
+                  [disabled]="busy()"
+                  [attr.aria-label]="'Select warp offset ' + (cell.x - navigationRadius) + ',' + (cell.y - navigationRadius)"
+                  [attr.data-testid]="'nav-cell-' + cell.x + '-' + cell.y"
+                  (click)="selectWarpDestination(cell.x, cell.y)"
+                >
+                  <span class="sr-only">{{ cell.x - navigationRadius }},{{ cell.y - navigationRadius }}</span>
+                </button>
+              }
+            }
+          </div>
+        </article>
+      </div>
+    </article>
+
+    <article class="panel launch-card">
+      <a [routerLink]="['/launch', game.resumeCode]">Back to Launch Screen</a>
     </article>
   </section>
 }

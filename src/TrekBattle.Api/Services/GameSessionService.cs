@@ -156,13 +156,24 @@ public sealed class GameSessionService
             {
                 var galaxyMap = EnsureGalaxyMap(state.GalaxyMap);
 
-                if (galaxyMap.MovementUsed)
+                if (request.DestinationX is null && request.DestinationY is null)
                 {
-                    throw new ArgumentException("Warp jump has already been used this turn.", nameof(resumeCode));
+                    return state with
+                    {
+                        CurrentScreen = "Galaxy",
+                        GalaxyMap = galaxyMap with
+                        {
+                            MovementUsed = false,
+                            QueuedDestinationX = null,
+                            QueuedDestinationY = null
+                        }
+                    };
                 }
 
-                var destinationX = ClampToGalaxy(request.DestinationX, GalaxyWidth);
-                var destinationY = ClampToGalaxy(request.DestinationY, GalaxyHeight);
+                if (request.DestinationX is null || request.DestinationY is null)
+                {
+                    throw new ArgumentException("Warp destination must include both coordinates or neither.", nameof(request));
+                }
 
                 if (
                     request.DestinationX == galaxyMap.CurrentX &&
@@ -171,6 +182,8 @@ public sealed class GameSessionService
                     throw new ArgumentException("Destination must be different from the current location.", nameof(request));
                 }
 
+                var destinationX = request.DestinationX.Value;
+                var destinationY = request.DestinationY.Value;
                 var deltaX = Math.Abs(destinationX - galaxyMap.CurrentX);
                 var deltaY = Math.Abs(destinationY - galaxyMap.CurrentY);
                 if (Math.Max(deltaX, deltaY) > galaxyMap.JumpRange)
@@ -178,21 +191,14 @@ public sealed class GameSessionService
                     throw new ArgumentException("Destination is outside the warp range.", nameof(request));
                 }
 
-                var updatedSectors = galaxyMap.Sectors
-                    .Select(sector => sector.X == destinationX && sector.Y == destinationY
-                        ? sector with { Visited = true, Scanned = true }
-                        : sector)
-                    .ToArray();
-
                 return state with
                 {
                     CurrentScreen = "Galaxy",
                     GalaxyMap = galaxyMap with
                     {
-                        CurrentX = destinationX,
-                        CurrentY = destinationY,
-                        MovementUsed = true,
-                        Sectors = updatedSectors
+                        MovementUsed = false,
+                        QueuedDestinationX = destinationX,
+                        QueuedDestinationY = destinationY
                     }
                 };
             },
@@ -213,6 +219,8 @@ public sealed class GameSessionService
                     updatedMap = ApplyLongRangeScan(updatedMap);
                 }
 
+                updatedMap = ApplyQueuedWarpJump(updatedMap);
+
                 return state with
                 {
                     CurrentScreen = "Galaxy",
@@ -220,7 +228,9 @@ public sealed class GameSessionService
                     {
                         CompletedTurns = galaxyMap.CompletedTurns + 1,
                         ActionUsed = false,
-                        MovementUsed = false
+                        MovementUsed = false,
+                        QueuedDestinationX = null,
+                        QueuedDestinationY = null
                     }
                 };
             },
@@ -248,8 +258,15 @@ public sealed class GameSessionService
         };
     }
 
-    private static GalaxyMapState ApplyWarpJump(GalaxyMapState galaxyMap, int destinationX, int destinationY)
+    private static GalaxyMapState ApplyQueuedWarpJump(GalaxyMapState galaxyMap)
     {
+        if (galaxyMap.QueuedDestinationX is null || galaxyMap.QueuedDestinationY is null)
+        {
+            return galaxyMap;
+        }
+
+        var destinationX = ClampToGalaxy(galaxyMap.QueuedDestinationX.Value, GalaxyWidth);
+        var destinationY = ClampToGalaxy(galaxyMap.QueuedDestinationY.Value, GalaxyHeight);
         var updatedSectors = galaxyMap.Sectors
             .Select(sector => sector.X == destinationX && sector.Y == destinationY
                 ? sector with { Visited = true, Scanned = true }
@@ -260,7 +277,9 @@ public sealed class GameSessionService
         {
             CurrentX = destinationX,
             CurrentY = destinationY,
-            MovementUsed = true,
+            MovementUsed = false,
+            QueuedDestinationX = null,
+            QueuedDestinationY = null,
             Sectors = updatedSectors
         };
     }
@@ -336,6 +355,8 @@ public sealed class GameSessionService
                 CompletedTurns: 0,
                 ActionUsed: false,
                 MovementUsed: false,
+                QueuedDestinationX: null,
+                QueuedDestinationY: null,
                 Sectors: sectors));
     }
 

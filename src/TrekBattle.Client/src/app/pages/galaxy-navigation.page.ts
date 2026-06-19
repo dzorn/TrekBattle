@@ -44,6 +44,7 @@ export class GalaxyNavigationPageComponent {
     this.gameApi.activateGalaxyView(resumeCode).subscribe({
       next: session => {
         this.session.set(session);
+        this.syncSelectedDestination(session);
         this.loading.set(false);
       },
       error: () => {
@@ -66,6 +67,7 @@ export class GalaxyNavigationPageComponent {
     this.gameApi.toggleLongRangeScan(game.resumeCode).subscribe({
       next: session => {
         this.session.set(session);
+        this.syncSelectedDestination(session);
         this.statusMessage.set(session.galaxyMap.actionUsed ? 'Long range scan queued.' : 'Long range scan cleared.');
         this.busy.set(false);
       },
@@ -87,14 +89,12 @@ export class GalaxyNavigationPageComponent {
     const selected = this.selectedDestination();
 
     if (selected && selected.x === gridX && selected.y === gridY) {
-      this.selectedDestination.set(null);
-      this.statusMessage.set('Movement destination cleared.');
+      this.clearQueuedMovement(game);
       return;
     }
 
     if (this.isNavigationCenter(gridX, gridY)) {
-      this.selectedDestination.set(null);
-      this.statusMessage.set('Movement destination cleared.');
+      this.clearQueuedMovement(game);
       return;
     }
 
@@ -102,12 +102,6 @@ export class GalaxyNavigationPageComponent {
     const offsetY = gridY - JumpRange;
     const destinationX = game.galaxyMap.currentX + offsetX;
     const destinationY = game.galaxyMap.currentY + offsetY;
-
-    if (game.galaxyMap.movementUsed) {
-      this.selectedDestination.set({ x: gridX, y: gridY });
-      this.statusMessage.set(`Movement destination selected at range ${offsetX},${offsetY}.`);
-      return;
-    }
 
     this.busy.set(true);
     this.statusMessage.set(null);
@@ -118,8 +112,8 @@ export class GalaxyNavigationPageComponent {
     }).subscribe({
       next: session => {
         this.session.set(session);
-        this.selectedDestination.set({ x: gridX, y: gridY });
-        this.statusMessage.set(`Warp jump complete at ${this.locationLabel(session.galaxyMap.currentX, session.galaxyMap.currentY)}.`);
+        this.syncSelectedDestination(session);
+        this.statusMessage.set(`Movement destination selected at range ${offsetX},${offsetY}.`);
         this.busy.set(false);
       },
       error: error => {
@@ -141,14 +135,19 @@ export class GalaxyNavigationPageComponent {
     this.statusMessage.set(null);
 
     const hadQueuedAction = game.galaxyMap.actionUsed;
+    const hadQueuedMovement = this.movementQueued;
 
     this.gameApi.endTurn(game.resumeCode).subscribe({
       next: session => {
         this.session.set(session);
-        this.selectedDestination.set(null);
+        this.syncSelectedDestination(session);
 
-        if (hadQueuedAction) {
+        if (hadQueuedAction && hadQueuedMovement) {
+          this.statusMessage.set(`Long range scan and warp jump resolved. Turn ${session.galaxyMap.completedTurns} completed.`);
+        } else if (hadQueuedAction) {
           this.statusMessage.set(`Long range scan resolved. Turn ${session.galaxyMap.completedTurns} completed.`);
+        } else if (hadQueuedMovement) {
+          this.statusMessage.set(`Warp jump resolved. Turn ${session.galaxyMap.completedTurns} completed.`);
         } else {
           this.statusMessage.set(`Turn ${session.galaxyMap.completedTurns} completed.`);
         }
@@ -260,6 +259,48 @@ export class GalaxyNavigationPageComponent {
   protected isSelectedDestination(x: number, y: number): boolean {
     const selected = this.selectedDestination();
     return selected ? selected.x === x && selected.y === y : false;
+  }
+
+  private clearQueuedMovement(game: GameSessionState): void {
+    this.busy.set(true);
+    this.statusMessage.set(null);
+
+    this.gameApi.warpJump(game.resumeCode, {
+      destinationX: null,
+      destinationY: null,
+    }).subscribe({
+      next: session => {
+        this.session.set(session);
+        this.syncSelectedDestination(session);
+        this.statusMessage.set('Movement destination cleared.');
+        this.busy.set(false);
+      },
+      error: error => {
+        console.error('[TrekBattle] Movement clear failed.', error);
+        this.statusMessage.set('Unable to clear the movement destination. Try again.');
+        this.busy.set(false);
+      },
+    });
+  }
+
+  private syncSelectedDestination(session: GameSessionState | null): void {
+    if (!session) {
+      this.selectedDestination.set(null);
+      return;
+    }
+
+    const queuedX = session?.galaxyMap.queuedDestinationX;
+    const queuedY = session?.galaxyMap.queuedDestinationY;
+
+    if (queuedX === null || queuedY === null || queuedX === undefined || queuedY === undefined) {
+      this.selectedDestination.set(null);
+      return;
+    }
+
+    const map = session.galaxyMap;
+    const gridX = JumpRange + (queuedX - map.currentX);
+    const gridY = JumpRange + (queuedY - map.currentY);
+    this.selectedDestination.set({ x: gridX, y: gridY });
   }
 
 }

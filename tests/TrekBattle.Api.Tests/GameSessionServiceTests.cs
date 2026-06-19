@@ -119,7 +119,7 @@ public class GameSessionServiceTests
     }
 
     [Fact]
-    public async Task WarpJumpAsync_MovesWithinJumpRangeAndMarksTheDestinationVisitedAndScanned()
+    public async Task WarpJumpAsync_QueuesWithinJumpRangeAndDoesNotMoveTheShipUntilTheTurnEnds()
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
@@ -144,18 +144,21 @@ public class GameSessionServiceTests
             CancellationToken.None);
 
         Assert.NotNull(jumped);
-        Assert.True(jumped!.GalaxyMap.MovementUsed);
-        Assert.Equal(destination.DestinationX, jumped.GalaxyMap.CurrentX);
-        Assert.Equal(destination.DestinationY, jumped.GalaxyMap.CurrentY);
-        Assert.Contains(jumped.GalaxyMap.Sectors, sector =>
+        Assert.False(jumped!.GalaxyMap.MovementUsed);
+        Assert.Equal(created.GalaxyMap.CurrentX, jumped.GalaxyMap.CurrentX);
+        Assert.Equal(created.GalaxyMap.CurrentY, jumped.GalaxyMap.CurrentY);
+        Assert.Equal(destination.DestinationX, jumped.GalaxyMap.QueuedDestinationX);
+        Assert.Equal(destination.DestinationY, jumped.GalaxyMap.QueuedDestinationY);
+        Assert.DoesNotContain(jumped.GalaxyMap.Sectors, sector =>
             sector.X == destination.DestinationX &&
             sector.Y == destination.DestinationY &&
             sector.Visited &&
-            sector.Scanned);
+            sector.Scanned &&
+            (sector.X != created.GalaxyMap.CurrentX || sector.Y != created.GalaxyMap.CurrentY));
     }
 
     [Fact]
-    public async Task WarpJumpAsync_ClampsOutOfBoundsDestinationsToTheGalaxyEdge()
+    public async Task WarpJumpAsync_QueuesOutOfBoundsDestinationsForEndTurnResolutionAtTheGalaxyEdge()
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
@@ -175,7 +178,7 @@ public class GameSessionServiceTests
 
         var currentX = created.GalaxyMap.CurrentX;
         var currentY = created.GalaxyMap.CurrentY;
-        var intendedDestinationX = currentX <= 5 ? currentX - 6 : currentX + 6;
+        var intendedDestinationX = currentX <= 5 ? currentX - 5 : currentX + 5;
 
         var jumped = await service.WarpJumpAsync(
             "EdgeClamp444",
@@ -183,13 +186,21 @@ public class GameSessionServiceTests
             CancellationToken.None);
 
         Assert.NotNull(jumped);
-        Assert.True(jumped!.GalaxyMap.MovementUsed);
+        Assert.False(jumped!.GalaxyMap.MovementUsed);
+        Assert.Equal(currentX, jumped.GalaxyMap.CurrentX);
         Assert.Equal(currentY, jumped.GalaxyMap.CurrentY);
-        Assert.Equal(currentX <= 5 ? 0 : 11, jumped.GalaxyMap.CurrentX);
+        Assert.Equal(intendedDestinationX, jumped.GalaxyMap.QueuedDestinationX);
+        Assert.Equal(currentY, jumped.GalaxyMap.QueuedDestinationY);
+
+        var ended = await service.EndTurnAsync("EdgeClamp444", CancellationToken.None);
+
+        Assert.NotNull(ended);
+        Assert.Equal(currentX <= 5 ? 0 : 11, ended!.GalaxyMap.CurrentX);
+        Assert.Equal(currentY, ended.GalaxyMap.CurrentY);
     }
 
     [Fact]
-    public async Task EndTurnAsync_ResolvesQueuedLongRangeScanAndCompletesTheTurn()
+    public async Task EndTurnAsync_ResolvesQueuedLongRangeScanAndWarpJumpAndCompletesTheTurn()
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();
@@ -210,6 +221,11 @@ public class GameSessionServiceTests
         var originX = created.GalaxyMap.CurrentX;
         var originY = created.GalaxyMap.CurrentY;
         await service.ToggleLongRangeScanAsync("TurnOrder555", CancellationToken.None);
+        var destination = ChooseWarpDestination(originX, originY);
+        await service.WarpJumpAsync(
+            "TurnOrder555",
+            new WarpJumpRequest(destination.DestinationX, destination.DestinationY),
+            CancellationToken.None);
 
         var ended = await service.EndTurnAsync("TurnOrder555", CancellationToken.None);
 
@@ -217,8 +233,10 @@ public class GameSessionServiceTests
         Assert.Equal(1, ended!.GalaxyMap.CompletedTurns);
         Assert.False(ended.GalaxyMap.ActionUsed);
         Assert.False(ended.GalaxyMap.MovementUsed);
-        Assert.Equal(originX, ended.GalaxyMap.CurrentX);
-        Assert.Equal(originY, ended.GalaxyMap.CurrentY);
+        Assert.Null(ended.GalaxyMap.QueuedDestinationX);
+        Assert.Null(ended.GalaxyMap.QueuedDestinationY);
+        Assert.Equal(destination.DestinationX, ended.GalaxyMap.CurrentX);
+        Assert.Equal(destination.DestinationY, ended.GalaxyMap.CurrentY);
 
         foreach (var sector in ended.GalaxyMap.Sectors.Where(sector =>
                      Math.Abs(sector.X - originX) <= 1 &&
@@ -227,6 +245,11 @@ public class GameSessionServiceTests
             Assert.True(sector.Scanned);
         }
 
+        Assert.Contains(ended.GalaxyMap.Sectors, sector =>
+            sector.X == destination.DestinationX &&
+            sector.Y == destination.DestinationY &&
+            sector.Visited &&
+            sector.Scanned);
         Assert.Contains(ended.GalaxyMap.Sectors, sector =>
             sector.X == originX &&
             sector.Y == originY &&

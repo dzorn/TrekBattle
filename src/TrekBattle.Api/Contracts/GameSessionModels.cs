@@ -4,7 +4,7 @@ public sealed record StartGameRequest(string PlayerName, string ShipName);
 
 public sealed record ResumeGameRequest(string ResumeCode);
 
-public sealed record WarpJumpRequest(int DestinationX, int DestinationY);
+public sealed record WarpJumpRequest(int? DestinationX, int? DestinationY);
 
 public sealed record GalaxySectorState(
     int X,
@@ -24,6 +24,8 @@ public sealed record GalaxyMapState(
     int CompletedTurns,
     bool ActionUsed,
     bool MovementUsed,
+    int? QueuedDestinationX,
+    int? QueuedDestinationY,
     IReadOnlyList<GalaxySectorState> Sectors);
 
 public sealed record GameSessionState(

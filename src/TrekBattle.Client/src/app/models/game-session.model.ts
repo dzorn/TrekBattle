@@ -8,8 +8,8 @@ export interface ResumeGameRequest {
 }
 
 export interface WarpJumpRequest {
-  destinationX: number;
-  destinationY: number;
+  destinationX: number | null;
+  destinationY: number | null;
 }
 
 export interface GalaxySectorState {
@@ -31,6 +31,8 @@ export interface GalaxyMapState {
   completedTurns: number;
   actionUsed: boolean;
   movementUsed: boolean;
+  queuedDestinationX: number | null;
+  queuedDestinationY: number | null;
   sectors: GalaxySectorState[];
 }
 
